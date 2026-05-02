@@ -1,234 +1,284 @@
-PE html>
+<!DOCTYPE html>
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TaksiBor</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffd200">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TaksiBor">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',sans-serif;background:#0f0c29;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.splash{text-align:center;color:white;padding:20px}
-.logo{font-size:80px;margin-bottom:20px}
-.title{font-size:36px;font-weight:700;background:linear-gradient(135deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
-.subtitle{font-size:16px;color:#aaa;margin-bottom:50px}
-.btn-container{display:flex;flex-direction:column;gap:15px;max-width:300px;margin:0 auto}
-.btn{padding:18px;border:none;border-radius:16px;font-size:18px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:15px;transition:transform 0.2s}
-.btn:active{transform:scale(0.97)}
-.btn-client{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
-.btn-driver{background:linear-gradient(135deg,#f7971e,#ffd200);color:#333}
-.btn-icon{font-size:28px}
-.btn-text{text-align:left}
-.btn-name{display:block;font-size:18px}
-.btn-desc{display:block;font-size:12px;opacity:0.8;font-weight:400}
-.admin-btn{position:fixed;top:15px;right:15px;background:transparent;border:none;color:#333;font-size:20px;cursor:pointer;opacity:0.3}
+body{font-family:'Segoe UI',sans-serif;background:#0f0c29;min-height:100vh;color:white}
+.screen{display:none;min-height:100vh;padding:20px}
+.screen.active{display:flex;flex-direction:column}
+
+/* Login */
+#login{align-items:center;justify-content:center;text-align:center}
+.logo{font-size:80px;margin-bottom:15px}
+.app-title{font-size:38px;font-weight:800;background:linear-gradient(135deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.app-sub{font-size:15px;color:#aaa;margin-bottom:50px}
+.role-btns{display:flex;flex-direction:column;gap:15px;width:100%;max-width:320px}
+.role-btn{padding:20px;border:none;border-radius:18px;font-size:17px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:15px;transition:transform 0.15s,box-shadow 0.15s}
+.role-btn:active{transform:scale(0.97)}
+.role-btn-client{background:linear-gradient(135deg,#667eea,#764ba2);color:white;box-shadow:0 8px 25px rgba(102,126,234,0.4)}
+.role-btn-driver{background:linear-gradient(135deg,#f7971e,#ffd200);color:#1a1a2e;box-shadow:0 8px 25px rgba(247,151,30,0.4)}
+.role-icon{font-size:32px}
+.role-text{text-align:left}
+.role-name{display:block;font-size:18px;font-weight:700}
+.role-desc{display:block;font-size:12px;opacity:0.75;font-weight:400;margin-top:2px}
+.admin-btn{position:fixed;top:20px;right:20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);width:38px;height:38px;border-radius:50%;font-size:16px;cursor:pointer}
 
 /* Phone Screen */
-.screen{display:none;min-height:100vh;background:#0f0c29;color:white;padding:20px}
-.screen.active{display:block}
-.back-btn{background:rgba(255,255,255,0.1);border:none;color:white;padding:10px 20px;border-radius:10px;font-size:14px;cursor:pointer;margin-bottom:30px}
-.screen-title{font-size:24px;font-weight:700;margin-bottom:8px}
-.screen-sub{color:#aaa;font-size:14px;margin-bottom:30px}
-.input-group{margin-bottom:20px}
-.input-label{font-size:14px;color:#aaa;margin-bottom:8px;display:block}
-.input{width:100%;padding:15px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;color:white;font-size:16px;outline:none}
+.back-btn{background:rgba(255,255,255,0.08);border:none;color:white;padding:10px 20px;border-radius:12px;font-size:14px;cursor:pointer;align-self:flex-start;margin-bottom:25px}
+.screen-title{font-size:26px;font-weight:700;margin-bottom:6px}
+.screen-sub{font-size:14px;color:#aaa;margin-bottom:28px}
+.input-group{margin-bottom:18px}
+.input-label{font-size:13px;color:#aaa;margin-bottom:7px;display:block}
+.input{width:100%;padding:15px 18px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;color:white;font-size:15px;outline:none;transition:border-color 0.2s;font-family:inherit}
 .input:focus{border-color:#f7971e}
-.input option{background:#1a1a2e;color:white}
-.btn-primary{width:100%;padding:16px;background:linear-gradient(135deg,#f7971e,#ffd200);border:none;border-radius:12px;color:#333;font-size:17px;font-weight:700;cursor:pointer;margin-top:10px}
-.code-box{display:none;margin-top:20px;padding:15px;background:rgba(255,215,0,0.1);border:1px solid #ffd200;border-radius:12px;text-align:center}
-.demo-code{font-size:28px;font-weight:700;color:#ffd200;letter-spacing:8px}
-.demo-label{font-size:12px;color:#aaa;margin-top:5px}
+.input option{background:#1a1a2e}
+.btn-primary{width:100%;padding:17px;background:linear-gradient(135deg,#f7971e,#ffd200);border:none;border-radius:14px;color:#1a1a2e;font-size:17px;font-weight:700;cursor:pointer;margin-top:8px;transition:transform 0.15s}
+.btn-primary:active{transform:scale(0.98)}
+.code-section{margin-top:22px;padding:20px;background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);border-radius:16px}
+.code-hint{font-size:13px;color:#aaa;margin-bottom:10px;text-align:center}
+.demo-code{font-size:32px;font-weight:800;color:#ffd200;letter-spacing:10px;text-align:center;margin-bottom:18px}
 
-/* Home Screen */
+/* Waiting */
+#waiting{align-items:center;justify-content:center;text-align:center}
+.waiting-icon{font-size:70px;margin-bottom:20px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.waiting-title{font-size:24px;font-weight:700;margin-bottom:10px}
+.waiting-desc{font-size:14px;color:#aaa;line-height:1.6;max-width:280px;margin:0 auto 30px}
+.btn-secondary{padding:13px 30px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;border-radius:12px;font-size:15px;cursor:pointer}
+
+/* Home Header */
 .home-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
-.user-name{font-size:20px;font-weight:600}
-.logout-btn{background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 15px;border-radius:8px;font-size:13px;cursor:pointer}
-.routes-title{font-size:16px;color:#aaa;margin-bottom:15px}
-.route-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px;margin-bottom:12px;cursor:pointer;transition:all 0.2s}
-.route-card:active{transform:scale(0.98)}
-.route-name{font-size:17px;font-weight:600;margin-bottom:6px}
-.route-info{display:flex;gap:15px;font-size:13px;color:#aaa}
-.online-dot{color:#00ff88}
+.greeting{font-size:22px;font-weight:700}
+.logout-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:white;padding:8px 16px;border-radius:10px;font-size:13px;cursor:pointer}
 
-/* Driver Screen */
-.driver-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px;margin-bottom:12px}
-.driver-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-.driver-name{font-size:17px;font-weight:600}
-.driver-status{display:flex;align-items:center;gap:5px;font-size:13px}
-.status-online{color:#00ff88}
-.status-offline{color:#aaa}
-.driver-car{font-size:14px;color:#aaa;margin-bottom:12px}
-.driver-btns{display:flex;gap:10px}
-.btn-chat{flex:1;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;border-radius:10px;color:white;font-size:14px;cursor:pointer}
-.btn-call{flex:1;padding:10px;background:linear-gradient(135deg,#00b09b,#96c93d);border:none;border-radius:10px;color:white;font-size:14px;cursor:pointer}
+/* Routes */
+.section-label{font-size:14px;color:#aaa;margin-bottom:14px;font-weight:500}
+.route-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px;cursor:pointer;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center}
+.route-card:active{transform:scale(0.98);background:rgba(255,255,255,0.08)}
+.route-left .route-name{font-size:16px;font-weight:600;margin-bottom:6px}
+.route-stats{display:flex;gap:12px;font-size:13px;color:#aaa}
+.online-badge{color:#00ff88}
+.route-arrow{font-size:20px;color:#aaa}
 
-/* Admin Login */
-.admin-login{max-width:320px;margin:0 auto;padding-top:80px;text-align:center}
-.admin-icon{font-size:60px;margin-bottom:20px}
-
-/* Status */
-.waiting{text-align:center;padding-top:100px}
-.waiting-icon{font-size:60px;margin-bottom:20px}
+/* Drivers */
+.driver-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px}
+.driver-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.driver-name{font-size:16px;font-weight:600}
+.status-badge{font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px}
+.status-on{background:rgba(0,255,136,0.15);color:#00ff88}
+.status-off{background:rgba(255,255,255,0.08);color:#aaa}
+.driver-car{font-size:14px;color:#aaa;margin-bottom:14px}
+.driver-actions{display:flex;gap:10px}
+.btn-chat{flex:1;padding:11px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;border-radius:11px;color:white;font-size:14px;font-weight:600;cursor:pointer}
+.btn-call{flex:1;padding:11px;background:linear-gradient(135deg,#00b09b,#96c93d);border:none;border-radius:11px;color:white;font-size:14px;font-weight:600;cursor:pointer}
 
 /* Driver Cabinet */
-.cabinet-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px;margin-bottom:15px}
-.cabinet-title{font-size:14px;color:#aaa;margin-bottom:5px}
-.cabinet-value{font-size:20px;font-weight:700}
-.switch-container{display:flex;justify-content:space-between;align-items:center}
-.switch{width:60px;height:30px;background:#444;border-radius:15px;border:none;cursor:pointer;position:relative;transition:background 0.3s}
-.switch.on{background:linear-gradient(135deg,#00b09b,#96c93d)}
-.switch::after{content:'';position:absolute;width:24px;height:24px;background:white;border-radius:50%;top:3px;left:3px;transition:left 0.3s}
-.switch.on::after{left:33px}
+.cabinet-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:14px}
+.cab-label{font-size:13px;color:#aaa;margin-bottom:6px}
+.cab-value{font-size:22px;font-weight:700}
+.cab-value.days{color:#ffd200}
+.switch-row{display:flex;justify-content:space-between;align-items:center}
+.toggle{width:58px;height:30px;border-radius:15px;border:none;cursor:pointer;position:relative;transition:background 0.3s;background:#444;flex-shrink:0}
+.toggle.on{background:linear-gradient(135deg,#00b09b,#96c93d)}
+.toggle::after{content:'';position:absolute;width:22px;height:22px;background:white;border-radius:50%;top:4px;left:4px;transition:left 0.3s;box-shadow:0 2px 5px rgba(0,0,0,0.3)}
+.toggle.on::after{left:32px}
+
+/* Admin Login */
+#admin-login{align-items:center;justify-content:center}
+.admin-box{width:100%;max-width:320px;text-align:center}
+.admin-icon{font-size:65px;margin-bottom:15px}
+
+/* General Chat Button */
+.general-chat-btn{width:100%;padding:15px;background:rgba(102,126,234,0.15);border:1px solid rgba(102,126,234,0.3);border-radius:14px;color:white;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px}
+
+/* Search */
+.search-input{width:100%;padding:13px 18px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;color:white;font-size:15px;outline:none;margin-bottom:18px}
+.search-input:focus{border-color:#f7971e}
+
+/* Empty */
+.empty{text-align:center;padding:40px 20px;color:#aaa;font-size:15px}
+.empty-icon{font-size:45px;margin-bottom:12px}
 
 /* Toast */
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:12px 25px;border-radius:25px;font-size:14px;display:none;z-index:999}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(40,40,60,0.95);color:white;padding:13px 28px;border-radius:30px;font-size:14px;display:none;z-index:9999;border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(10px);white-space:nowrap}
+
+/* Loading */
+.loader{text-align:center;padding:30px;color:#aaa}
 </style>
 </head>
 <body>
 
 <button class="admin-btn" onclick="showScreen('admin-login')">⚙️</button>
 
-<!-- Splash / Login -->
+<!-- LOGIN -->
 <div id="login" class="screen active">
-<div class="splash">
   <div class="logo">🚖</div>
-  <div class="title">TaksiBor</div>
-  <div class="subtitle">Qulay sayohat platformasi</div>
-  <div class="btn-container">
-    <button class="btn btn-client" onclick="selectRole('client')">
-      <span class="btn-icon">👤</span>
-      <span class="btn-text">
-        <span class="btn-name">Yo'lovchi</span>
-        <span class="btn-desc">Taksi qidirish</span>
+  <div class="app-title">TaksiBor</div>
+  <div class="app-sub">Qulay sayohat platformasi</div>
+  <div class="role-btns">
+    <button class="role-btn role-btn-client" onclick="selectRole('client')">
+      <span class="role-icon">👤</span>
+      <span class="role-text">
+        <span class="role-name">Yo'lovchi</span>
+        <span class="role-desc">Taksi qidirish</span>
       </span>
     </button>
-    <button class="btn btn-driver" onclick="selectRole('driver')">
-      <span class="btn-icon">🚗</span>
-      <span class="btn-text">
-        <span class="btn-name">Haydovchi</span>
-        <span class="btn-desc">Yo'lovchi topish</span>
+    <button class="role-btn role-btn-driver" onclick="selectRole('driver')">
+      <span class="role-icon">🚗</span>
+      <span class="role-text">
+        <span class="role-name">Haydovchi</span>
+        <span class="role-desc">Yo'lovchi topish</span>
       </span>
     </button>
   </div>
 </div>
-</div>
 
-<!-- Phone Screen -->
+<!-- PHONE -->
 <div id="phone-screen" class="screen">
-<button class="back-btn" onclick="showScreen('login')">← Orqaga</button>
-<div class="screen-title" id="phone-title">Kirish</div>
-<div class="screen-sub">Telefon raqamingizni kiriting</div>
+  <button class="back-btn" onclick="showScreen('login')">← Orqaga</button>
+  <div class="screen-title" id="phone-title">Kirish</div>
+  <div class="screen-sub">Telefon raqamingizni kiriting</div>
 
-<div id="driver-fields" style="display:none">
-  <div class="input-group">
-    <label class="input-label">Ismingiz</label>
-    <input type="text" id="inp-name" class="input" placeholder="Ism Familiya">
-  </div>
-  <div class="input-group">
-    <label class="input-label">Mashina rusumi</label>
-    <input type="text" id="inp-car" class="input" placeholder="Nexia 3, Cobalt...">
-  </div>
-  <div class="input-group">
-    <label class="input-label">Mashina raqami</label>
-    <input type="text" id="inp-plate" class="input" placeholder="01 A 123 BC">
-  </div>
-  <div class="input-group">
-    <label class="input-label">Yo'nalish</label>
-    <select id="inp-route" class="input">
-      <option value="">Tanlang...</option>
-    </select>
-  </div>
-</div>
-
-<div class="input-group">
-  <label class="input-label">Telefon raqam</label>
-  <input type="tel" id="inp-phone" class="input" placeholder="+998901234567">
-</div>
-<button class="btn-primary" onclick="sendCode()">Kod olish</button>
-
-<div class="code-box" id="code-box">
-  <div class="demo-label">Tasdiqlash kodi:</div>
-  <div class="demo-code" id="demo-code-show">------</div>
-  <input type="number" id="inp-code" class="input" placeholder="Kodni kiriting" style="margin-top:15px;text-align:center;font-size:22px;letter-spacing:8px">
-  <button class="btn-primary" onclick="verifyCode()">Tasdiqlash</button>
-</div>
-</div>
-
-<!-- Admin Login -->
-<div id="admin-login" class="screen">
-<button class="back-btn" onclick="showScreen('login')">← Orqaga</button>
-<div class="admin-login">
-  <div class="admin-icon">🔐</div>
-  <div class="screen-title">Admin</div>
-  <div class="screen-sub" style="text-align:center">Maxsus kirish</div>
-  <div class="input-group" style="margin-top:30px">
-    <input type="text" id="admin-user" class="input" placeholder="Login">
-  </div>
-  <div class="input-group">
-    <input type="password" id="admin-pass" class="input" placeholder="Parol">
-  </div>
-  <button class="btn-primary" onclick="adminLogin()">Kirish</button>
-</div>
-</div>
-
-<!-- Waiting Screen -->
-<div id="waiting" class="screen">
-<div class="waiting">
-  <div class="waiting-icon">⏳</div>
-  <div class="screen-title">Kutilmoqda</div>
-  <div class="screen-sub" style="text-align:center;margin-top:10px">Admin hisobingizni tekshirib tasdiqlaydi</div>
-  <button class="btn-primary" style="max-width:200px;margin:40px auto 0" onclick="logout()">Chiqish</button>
-</div>
-</div>
-
-<!-- Client Home -->
-<div id="client-home" class="screen">
-<div class="home-header">
-  <div class="user-name" id="client-name">Salom!</div>
-  <button class="logout-btn" onclick="logout()">Chiqish</button>
-</div>
-<div class="routes-title">Yo'nalishlarni tanlang:</div>
-<div id="routes-list"></div>
-</div>
-
-<!-- Drivers List -->
-<div id="drivers-screen" class="screen">
-<button class="back-btn" onclick="showScreen('client-home')">← Orqaga</button>
-<div class="screen-title" id="route-title">Haydovchilar</div>
-<div id="drivers-list" style="margin-top:20px"></div>
-</div>
-
-<!-- Driver Cabinet -->
-<div id="driver-home" class="screen">
-<div class="home-header">
-  <div class="user-name" id="driver-name-show">Haydovchi</div>
-  <button class="logout-btn" onclick="logout()">Chiqish</button>
-</div>
-<div class="cabinet-card">
-  <div class="cabinet-title">Obuna (kunlar)</div>
-  <div class="cabinet-value" id="days-left">0 kun</div>
-</div>
-<div class="cabinet-card">
-  <div class="switch-container">
-    <div>
-      <div class="cabinet-title">Holat</div>
-      <div class="cabinet-value" id="status-text">Offline</div>
+  <div id="driver-fields" style="display:none">
+    <div class="input-group">
+      <label class="input-label">To'liq ismingiz</label>
+      <input type="text" id="inp-name" class="input" placeholder="Ism Familiya">
     </div>
-    <button class="switch" id="status-switch" onclick="toggleStatus()"></button>
+    <div class="input-group">
+      <label class="input-label">Mashina rusumi</label>
+      <input type="text" id="inp-car" class="input" placeholder="Nexia 3, Cobalt, Malibu...">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Mashina davlat raqami</label>
+      <input type="text" id="inp-plate" class="input" placeholder="01 A 123 BC">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Yo'nalishingiz</label>
+      <select id="inp-route" class="input">
+        <option value="">Tanlang...</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <label class="input-label">Telefon raqam</label>
+    <input type="tel" id="inp-phone" class="input" placeholder="+998 90 123 45 67">
+  </div>
+  <button class="btn-primary" onclick="sendCode()">📲 Kod olish</button>
+
+  <div class="code-section" id="code-section" style="display:none">
+    <div class="code-hint">Tasdiqlash kodi:</div>
+    <div class="demo-code" id="demo-code">------</div>
+    <div class="input-group">
+      <input type="number" id="inp-code" class="input" placeholder="Kodni kiriting" style="text-align:center;font-size:24px;letter-spacing:8px">
+    </div>
+    <button class="btn-primary" onclick="verifyCode()">✅ Tasdiqlash</button>
   </div>
 </div>
-<div class="cabinet-card">
-  <div class="cabinet-title">Mashina</div>
-  <div class="cabinet-value" id="car-show">-</div>
+
+<!-- WAITING -->
+<div id="waiting" class="screen">
+  <div class="waiting-icon">⏳</div>
+  <div class="waiting-title">Tasdiq kutilmoqda</div>
+  <div class="waiting-desc">Admin hisobingizni ko'rib chiqadi va tasdiqlaydi. Bu odatda 24 soat ichida amalga oshiriladi.</div>
+  <button class="btn-secondary" onclick="logout()">Chiqish</button>
 </div>
+
+<!-- CLIENT HOME -->
+<div id="client-home" class="screen">
+  <div class="home-header">
+    <div class="greeting" id="client-greeting">Salom! 👋</div>
+    <button class="logout-btn" onclick="logout()">Chiqish</button>
+  </div>
+  <button class="general-chat-btn" onclick="openGeneralChat()">
+    💬 Umumiy Chat
+  </button>
+  <input type="text" class="search-input" placeholder="🔍 Haydovchi qidirish..." oninput="searchDrivers(this.value)">
+  <div class="section-label">Yo'nalishlarni tanlang:</div>
+  <div id="routes-list"><div class="loader">⏳ Yuklanmoqda...</div></div>
+</div>
+
+<!-- DRIVERS LIST -->
+<div id="drivers-screen" class="screen">
+  <button class="back-btn" onclick="showScreen('client-home')">← Orqaga</button>
+  <div class="screen-title" id="drivers-title">Haydovchilar</div>
+  <div class="screen-sub" id="drivers-sub"></div>
+  <div id="drivers-list"><div class="loader">⏳ Yuklanmoqda...</div></div>
+</div>
+
+<!-- SEARCH RESULTS -->
+<div id="search-screen" class="screen">
+  <button class="back-btn" onclick="showScreen('client-home')">← Orqaga</button>
+  <div class="screen-title">Qidiruv natijalari</div>
+  <div id="search-list"></div>
+</div>
+
+<!-- DRIVER HOME -->
+<div id="driver-home" class="screen">
+  <div class="home-header">
+    <div class="greeting" id="driver-greeting">Haydovchi</div>
+    <button class="logout-btn" onclick="logout()">Chiqish</button>
+  </div>
+  <div class="cabinet-card">
+    <div class="cab-label">📅 Obuna muddati</div>
+    <div class="cab-value days" id="cab-days">0 kun</div>
+  </div>
+  <div class="cabinet-card">
+    <div class="switch-row">
+      <div>
+        <div class="cab-label">Holatingiz</div>
+        <div class="cab-value" id="cab-status">Offline</div>
+      </div>
+      <button class="toggle" id="status-toggle" onclick="toggleOnline()"></button>
+    </div>
+  </div>
+  <div class="cabinet-card">
+    <div class="cab-label">🚗 Mashina</div>
+    <div class="cab-value" id="cab-car" style="font-size:17px">-</div>
+  </div>
+  <div class="cabinet-card">
+    <div class="cab-label">📞 Telefon</div>
+    <div class="cab-value" id="cab-phone" style="font-size:17px">-</div>
+  </div>
+  <button class="general-chat-btn" onclick="openGeneralChat()">
+    💬 Umumiy Chat
+  </button>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="admin-login" class="screen">
+  <button class="back-btn" onclick="showScreen('login')">← Orqaga</button>
+  <div class="admin-box">
+    <div class="admin-icon">🔐</div>
+    <div class="screen-title" style="text-align:center">Admin Kirish</div>
+    <div class="screen-sub" style="text-align:center">Maxsus panel</div>
+    <div class="input-group" style="margin-top:25px">
+      <label class="input-label">Login</label>
+      <input type="text" id="admin-login-inp" class="input" placeholder="admin">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Parol</label>
+      <input type="password" id="admin-pass-inp" class="input" placeholder="••••••••">
+    </div>
+    <button class="btn-primary" onclick="adminLogin()">Kirish</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 const API = 'https://taksi-app.onrender.com';
-let currentRole = '';
 let token = localStorage.getItem('token');
 let user = JSON.parse(localStorage.getItem('user') || 'null');
+let currentRole = '';
+let routesData = [];
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -236,26 +286,28 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 
-function toast(msg) {
+function toast(msg, color) {
   const t = document.getElementById('toast');
   t.textContent = msg;
+  t.style.borderColor = color ? color : 'rgba(255,255,255,0.1)';
   t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 3000);
 }
 
 function selectRole(role) {
   currentRole = role;
-  document.getElementById('phone-title').textContent = role === 'driver' ? 'Haydovchi kirish' : 'Yo\'lovchi kirish';
+  document.getElementById('phone-title').textContent = role === 'driver' ? '🚗 Haydovchi kirish' : '👤 Yo\'lovchi kirish';
   document.getElementById('driver-fields').style.display = role === 'driver' ? 'block' : 'none';
-  loadRoutes();
+  if (role === 'driver') loadRoutesForSelect();
   showScreen('phone-screen');
 }
 
-async function loadRoutes() {
+async function loadRoutesForSelect() {
   try {
     const res = await fetch(API + '/client/routes');
     const routes = await res.json();
     const sel = document.getElementById('inp-route');
+    sel.innerHTML = '<option value="">Tanlang...</option>';
     routes.forEach(r => {
       const opt = document.createElement('option');
       opt.value = r.id;
@@ -267,7 +319,7 @@ async function loadRoutes() {
 
 async function sendCode() {
   const phone = document.getElementById('inp-phone').value.trim();
-  if (!phone) return toast('Telefon raqam kiriting!');
+  if (!phone) return toast('📱 Telefon raqam kiriting!');
   try {
     const res = await fetch(API + '/auth/send-code', {
       method: 'POST',
@@ -276,29 +328,30 @@ async function sendCode() {
     });
     const data = await res.json();
     if (data.success) {
-      document.getElementById('code-box').style.display = 'block';
-      document.getElementById('demo-code-show').textContent = data.demo_code || '------';
-      toast('Kod yuborildi!');
+      document.getElementById('code-section').style.display = 'block';
+      document.getElementById('demo-code').textContent = data.demo_code || '------';
+      toast('✅ Kod yuborildi!', 'rgba(0,255,136,0.3)');
+    } else {
+      toast('❌ Xato: ' + (data.detail || 'Qayta urining'));
     }
-  } catch(e) { toast('Xato! Internet aloqasini tekshiring.'); }
+  } catch(e) {
+    toast('🌐 Internet aloqasini tekshiring!');
+  }
 }
 
 async function verifyCode() {
   const phone = document.getElementById('inp-phone').value.trim();
   const code = document.getElementById('inp-code').value.trim();
-  const name = document.getElementById('inp-name').value.trim();
-  const car_model = document.getElementById('inp-car').value.trim();
-  const car_number = document.getElementById('inp-plate').value.trim();
-  const route_id = document.getElementById('inp-route').value;
-  if (!code) return toast('Kodni kiriting!');
+  if (!code || code.length < 4) return toast('🔢 Kodni to\'liq kiriting!');
+  const body = {phone, code};
+  if (currentRole === 'driver') {
+    body.name = document.getElementById('inp-name').value.trim();
+    body.car_model = document.getElementById('inp-car').value.trim();
+    body.car_number = document.getElementById('inp-plate').value.trim();
+    const routeId = document.getElementById('inp-route').value;
+    if (routeId) body.route_id = parseInt(routeId);
+  }
   try {
-    const body = {phone, code};
-    if (currentRole === 'driver') {
-      body.name = name;
-      body.car_model = car_model;
-      body.car_number = car_number;
-      if (route_id) body.route_id = parseInt(route_id);
-    }
     const res = await fetch(API + '/auth/verify-code', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -310,609 +363,88 @@ async function verifyCode() {
       localStorage.setItem('user', JSON.stringify(data.user));
       token = data.token;
       user = data.user;
-      goHome();
+      toast('✅ Muvaffaqiyatli kirdingiz!', 'rgba(0,255,136,0.3)');
+      setTimeout(goHome, 800);
     } else {
-      toast(data.detail || 'Xato kod!');
+      toast('❌ ' + (data.detail || 'Noto\'g\'ri kod!'));
     }
-  } catch(e) { toast('Xato!'); }
+  } catch(e) {
+    toast('🌐 Xato! Qayta urining.');
+  }
 }
 
 function goHome() {
   if (!user) return showScreen('login');
-  if (user.role === 'admin') return showScreen('admin-panel');
+  if (user.role === 'admin') {
+    window.location.href = 'admin.html';
+    return;
+  }
   if (user.role === 'driver') {
     if (!user.is_approved) return showScreen('waiting');
     loadDriverProfile();
     showScreen('driver-home');
   } else {
-    document.getElementById('client-name').textContent = 'Salom, ' + (user.name || 'Mehmon') + '!';
+    document.getElementById('client-greeting').textContent = 'Salom, ' + (user.name || 'Mehmon') + '! 👋';
     loadClientRoutes();
     showScreen('client-home');
   }
 }
 
-async function loadDriverProfile() {
-  try {
-    const res = await fetch(API + '/driver/profile', {
-      headers: {'Authorization': 'Bearer ' + token}
-    });
-    const data = await res.json();
-    document.getElementById('driver-name-show').textContent = data.name || 'Haydovchi';
-    document.getElementById('days-left').textContent = (data.days_left || 0) + ' kun';
-    document.getElementById('car-show').textContent = (data.car_model || '') + ' ' + (data.car_number || '');
-    const sw = document.getElementById('status-switch');
-    if (data.is_online) { sw.classList.add('on'); document.getElementById('status-text').textContent = 'Online'; }
-  } catch(e) {}
-}
-
-async function toggleStatus() {
-  const sw = document.getElementById('status-switch');
-  const isOn = sw.classList.contains('on');
-  try {
-    const res = await fetch(API + '/driver/toggle-status', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
-      body: JSON.stringify({is_online: !isOn})
-    });
-    const data = await res.json();
-    if (data.success) {
-      sw.classList.toggle('on');
-      document.getElementById('status-text').textContent = data.is_online ? 'Online' : 'Offline';
-    }
-  } catch(e) { toast('Xato!'); }
-}
-
 async function loadClientRoutes() {
   try {
     const res = await fetch(API + '/client/routes');
-    const routes = await res.json();
-    const list = document.getElementById('routes-list');
-    list.innerHTML = '';
-    routes.forEach(r => {
-      list.innerHTML += `
-        <div class="route-card" onclick="loadDrivers(${r.id}, '${r.name}')">
-          <div class="route-name">🛣 ${r.name}</div>
-          <div class="route-info">
-            <span><span class="online-dot">●</span> ${r.online_drivers} online</span>
-            <span>👥 ${r.total_drivers} haydovchi</span>
-          </div>
-        </div>`;
-    });
-  } catch(e) { toast('Yo\'nalishlarni yuklab bo\'lmadi!'); }
-}
-
-async function loadDrivers(routeId, routeName) {
-  document.getElementById('route-title').textContent = routeName;
-  showScreen('drivers-screen');
-  try {
-    const res = await fetch(API + '/client/drivers/' + routeId);
-    const drivers = await res.json();
-    const list = document.getElementById('drivers-list');
-    list.innerHTML = '';
-    if (drivers.length === 0) {
-      list.innerHTML = '<div style="text-align:center;color:#aaa;padding:30px">Haydovchi topilmadi</div>';
-      return;
-    }
-    drivers.forEach(d => {
-      const online = d.is_online;
-      list.innerHTML += `
-        <div class="driver-card">
-          <div class="driver-header">
-            <div class="driver-name">👤 ${d.name}</div>
-            <div class="driver-status ${online ? 'status-online' : 'status-offline'}">
-              ${online ? '● Online' : '○ Offline'}
-            </div>
-          </div>
-          <div class="driver-car">🚗 ${d.car_model || ''} • ${d.car_number || ''}</div>
-          <div class="driver-btns">
-            <button class="btn-chat" onclick="startChat(${d.id}, '${d.name}')">💬 Chat</button>
-            <button class="btn-call" onclick="callDriver('${d.phone}')">📞 Qo'ng'iroq</button>
-          </div>
-        </div>`;
-    });
-  } catch(e) { toast('Xato!'); }
-}
-
-function callDriver(phone) {
-  window.location.href = 'tel:' + phone;
-}
-
-function startChat(driverId, driverName) {
-  const room = 'private_' + Math.min(user.id, driverId) + '_' + Math.max(user.id, driverId);
-  window.location.href = 'chat.html?room=' + room + '&receiver=' + driverId + '&name=' + encodeURIComponent(driverName);
-}
-
-async function adminLogin() {
-  const username = document.getElementById('admin-user').value;
-  const password = document.getElementById('admin-pass').value;
-  try {
-    const res = await fetch(API + '/auth/admin-login', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({username, password})
-    });
-    const data = await res.json();
-    if (data.success) {
-      localStorage.setItem('token', data.token);
-      token = data.token;
-      user = {role: 'admin', name: 'Admin'};
-      localStorage.setItem('user', JSON.stringify(user));
-      toast('Admin sifatida kirish muvaffaqiyatli!');
-      setTimeout(() => showScreen('login'), 1000);
-    } else {
-      toast('Login yoki parol xato!');
-    }
-  } catch(e) { toast('Xato!'); }
-}
-
-function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  token = null;
-  user = null;
-  showScreen('login');
-}
-
-// Auto login
-if (token && user) goHome();
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="uz">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TaksiBor</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',sans-serif;background:#0f0c29;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.splash{text-align:center;color:white;padding:20px}
-.logo{font-size:80px;margin-bottom:20px}
-.title{font-size:36px;font-weight:700;background:linear-gradient(135deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
-.subtitle{font-size:16px;color:#aaa;margin-bottom:50px}
-.btn-container{display:flex;flex-direction:column;gap:15px;max-width:300px;margin:0 auto}
-.btn{padding:18px;border:none;border-radius:16px;font-size:18px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:15px;transition:transform 0.2s}
-.btn:active{transform:scale(0.97)}
-.btn-client{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
-.btn-driver{background:linear-gradient(135deg,#f7971e,#ffd200);color:#333}
-.btn-icon{font-size:28px}
-.btn-text{text-align:left}
-.btn-name{display:block;font-size:18px}
-.btn-desc{display:block;font-size:12px;opacity:0.8;font-weight:400}
-.admin-btn{position:fixed;top:15px;right:15px;background:transparent;border:none;color:#333;font-size:20px;cursor:pointer;opacity:0.3}
-
-/* Phone Screen */
-.screen{display:none;min-height:100vh;background:#0f0c29;color:white;padding:20px}
-.screen.active{display:block}
-.back-btn{background:rgba(255,255,255,0.1);border:none;color:white;padding:10px 20px;border-radius:10px;font-size:14px;cursor:pointer;margin-bottom:30px}
-.screen-title{font-size:24px;font-weight:700;margin-bottom:8px}
-.screen-sub{color:#aaa;font-size:14px;margin-bottom:30px}
-.input-group{margin-bottom:20px}
-.input-label{font-size:14px;color:#aaa;margin-bottom:8px;display:block}
-.input{width:100%;padding:15px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;color:white;font-size:16px;outline:none}
-.input:focus{border-color:#f7971e}
-.input option{background:#1a1a2e;color:white}
-.btn-primary{width:100%;padding:16px;background:linear-gradient(135deg,#f7971e,#ffd200);border:none;border-radius:12px;color:#333;font-size:17px;font-weight:700;cursor:pointer;margin-top:10px}
-.code-box{display:none;margin-top:20px;padding:15px;background:rgba(255,215,0,0.1);border:1px solid #ffd200;border-radius:12px;text-align:center}
-.demo-code{font-size:28px;font-weight:700;color:#ffd200;letter-spacing:8px}
-.demo-label{font-size:12px;color:#aaa;margin-top:5px}
-
-/* Home Screen */
-.home-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
-.user-name{font-size:20px;font-weight:600}
-.logout-btn{background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 15px;border-radius:8px;font-size:13px;cursor:pointer}
-.routes-title{font-size:16px;color:#aaa;margin-bottom:15px}
-.route-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px;margin-bottom:12px;cursor:pointer;transition:all 0.2s}
-.route-card:active{transform:scale(0.98)}
-.route-name{font-size:17px;font-weight:600;margin-bottom:6px}
-.route-info{display:flex;gap:15px;font-size:13px;color:#aaa}
-.online-dot{color:#00ff88}
-
-/* Driver Screen */
-.driver-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px;margin-bottom:12px}
-.driver-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-.driver-name{font-size:17px;font-weight:600}
-.driver-status{display:flex;align-items:center;gap:5px;font-size:13px}
-.status-online{color:#00ff88}
-.status-offline{color:#aaa}
-.driver-car{font-size:14px;color:#aaa;margin-bottom:12px}
-.driver-btns{display:flex;gap:10px}
-.btn-chat{flex:1;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;border-radius:10px;color:white;font-size:14px;cursor:pointer}
-.btn-call{flex:1;padding:10px;background:linear-gradient(135deg,#00b09b,#96c93d);border:none;border-radius:10px;color:white;font-size:14px;cursor:pointer}
-
-/* Admin Login */
-.admin-login{max-width:320px;margin:0 auto;padding-top:80px;text-align:center}
-.admin-icon{font-size:60px;margin-bottom:20px}
-
-/* Status */
-.waiting{text-align:center;padding-top:100px}
-.waiting-icon{font-size:60px;margin-bottom:20px}
-
-/* Driver Cabinet */
-.cabinet-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px;margin-bottom:15px}
-.cabinet-title{font-size:14px;color:#aaa;margin-bottom:5px}
-.cabinet-value{font-size:20px;font-weight:700}
-.switch-container{display:flex;justify-content:space-between;align-items:center}
-.switch{width:60px;height:30px;background:#444;border-radius:15px;border:none;cursor:pointer;position:relative;transition:background 0.3s}
-.switch.on{background:linear-gradient(135deg,#00b09b,#96c93d)}
-.switch::after{content:'';position:absolute;width:24px;height:24px;background:white;border-radius:50%;top:3px;left:3px;transition:left 0.3s}
-.switch.on::after{left:33px}
-
-/* Toast */
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:12px 25px;border-radius:25px;font-size:14px;display:none;z-index:999}
-</style>
-</head>
-<body>
-
-<button class="admin-btn" onclick="showScreen('admin-login')">⚙️</button>
-
-<!-- Splash / Login -->
-<div id="login" class="screen active">
-<div class="splash">
-  <div class="logo">🚖</div>
-  <div class="title">TaksiBor</div>
-  <div class="subtitle">Qulay sayohat platformasi</div>
-  <div class="btn-container">
-    <button class="btn btn-client" onclick="selectRole('client')">
-      <span class="btn-icon">👤</span>
-      <span class="btn-text">
-        <span class="btn-name">Yo'lovchi</span>
-        <span class="btn-desc">Taksi qidirish</span>
-      </span>
-    </button>
-    <button class="btn btn-driver" onclick="selectRole('driver')">
-      <span class="btn-icon">🚗</span>
-      <span class="btn-text">
-        <span class="btn-name">Haydovchi</span>
-        <span class="btn-desc">Yo'lovchi topish</span>
-      </span>
-    </button>
-  </div>
-</div>
-</div>
-
-<!-- Phone Screen -->
-<div id="phone-screen" class="screen">
-<button class="back-btn" onclick="showScreen('login')">← Orqaga</button>
-<div class="screen-title" id="phone-title">Kirish</div>
-<div class="screen-sub">Telefon raqamingizni kiriting</div>
-
-<div id="driver-fields" style="display:none">
-  <div class="input-group">
-    <label class="input-label">Ismingiz</label>
-    <input type="text" id="inp-name" class="input" placeholder="Ism Familiya">
-  </div>
-  <div class="input-group">
-    <label class="input-label">Mashina rusumi</label>
-    <input type="text" id="inp-car" class="input" placeholder="Nexia 3, Cobalt...">
-  </div>
-  <div class="input-group">
-    <label class="input-label">Mashina raqami</label>
-    <input type="text" id="inp-plate" class="input" placeholder="01 A 123 BC">
-  </div>
-  <div class="input-group">
-    <label class="input-label">Yo'nalish</label>
-    <select id="inp-route" class="input">
-      <option value="">Tanlang...</option>
-    </select>
-  </div>
-</div>
-
-<div class="input-group">
-  <label class="input-label">Telefon raqam</label>
-  <input type="tel" id="inp-phone" class="input" placeholder="+998901234567">
-</div>
-<button class="btn-primary" onclick="sendCode()">Kod olish</button>
-
-<div class="code-box" id="code-box">
-  <div class="demo-label">Tasdiqlash kodi:</div>
-  <div class="demo-code" id="demo-code-show">------</div>
-  <input type="number" id="inp-code" class="input" placeholder="Kodni kiriting" style="margin-top:15px;text-align:center;font-size:22px;letter-spacing:8px">
-  <button class="btn-primary" onclick="verifyCode()">Tasdiqlash</button>
-</div>
-</div>
-
-<!-- Admin Login -->
-<div id="admin-login" class="screen">
-<button class="back-btn" onclick="showScreen('login')">← Orqaga</button>
-<div class="admin-login">
-  <div class="admin-icon">🔐</div>
-  <div class="screen-title">Admin</div>
-  <div class="screen-sub" style="text-align:center">Maxsus kirish</div>
-  <div class="input-group" style="margin-top:30px">
-    <input type="text" id="admin-user" class="input" placeholder="Login">
-  </div>
-  <div class="input-group">
-    <input type="password" id="admin-pass" class="input" placeholder="Parol">
-  </div>
-  <button class="btn-primary" onclick="adminLogin()">Kirish</button>
-</div>
-</div>
-
-<!-- Waiting Screen -->
-<div id="waiting" class="screen">
-<div class="waiting">
-  <div class="waiting-icon">⏳</div>
-  <div class="screen-title">Kutilmoqda</div>
-  <div class="screen-sub" style="text-align:center;margin-top:10px">Admin hisobingizni tekshirib tasdiqlaydi</div>
-  <button class="btn-primary" style="max-width:200px;margin:40px auto 0" onclick="logout()">Chiqish</button>
-</div>
-</div>
-
-<!-- Client Home -->
-<div id="client-home" class="screen">
-<div class="home-header">
-  <div class="user-name" id="client-name">Salom!</div>
-  <button class="logout-btn" onclick="logout()">Chiqish</button>
-</div>
-<div class="routes-title">Yo'nalishlarni tanlang:</div>
-<div id="routes-list"></div>
-</div>
-
-<!-- Drivers List -->
-<div id="drivers-screen" class="screen">
-<button class="back-btn" onclick="showScreen('client-home')">← Orqaga</button>
-<div class="screen-title" id="route-title">Haydovchilar</div>
-<div id="drivers-list" style="margin-top:20px"></div>
-</div>
-
-<!-- Driver Cabinet -->
-<div id="driver-home" class="screen">
-<div class="home-header">
-  <div class="user-name" id="driver-name-show">Haydovchi</div>
-  <button class="logout-btn" onclick="logout()">Chiqish</button>
-</div>
-<div class="cabinet-card">
-  <div class="cabinet-title">Obuna (kunlar)</div>
-  <div class="cabinet-value" id="days-left">0 kun</div>
-</div>
-<div class="cabinet-card">
-  <div class="switch-container">
-    <div>
-      <div class="cabinet-title">Holat</div>
-      <div class="cabinet-value" id="status-text">Offline</div>
-    </div>
-    <button class="switch" id="status-switch" onclick="toggleStatus()"></button>
-  </div>
-</div>
-<div class="cabinet-card">
-  <div class="cabinet-title">Mashina</div>
-  <div class="cabinet-value" id="car-show">-</div>
-</div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-const API = 'https://taksi-app.onrender.com';
-let currentRole = '';
-let token = localStorage.getItem('token');
-let user = JSON.parse(localStorage.getItem('user') || 'null');
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 3000);
-}
-
-function selectRole(role) {
-  currentRole = role;
-  document.getElementById('phone-title').textContent = role === 'driver' ? 'Haydovchi kirish' : 'Yo\'lovchi kirish';
-  document.getElementById('driver-fields').style.display = role === 'driver' ? 'block' : 'none';
-  loadRoutes();
-  showScreen('phone-screen');
-}
-
-async function loadRoutes() {
-  try {
-    const res = await fetch(API + '/client/routes');
-    const routes = await res.json();
-    const sel = document.getElementById('inp-route');
-    routes.forEach(r => {
-      const opt = document.createElement('option');
-      opt.value = r.id;
-      opt.textContent = r.name;
-      sel.appendChild(opt);
-    });
-  } catch(e) {}
-}
-
-async function sendCode() {
-  const phone = document.getElementById('inp-phone').value.trim();
-  if (!phone) return toast('Telefon raqam kiriting!');
-  try {
-    const res = await fetch(API + '/auth/send-code', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({phone, role: currentRole})
-    });
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById('code-box').style.display = 'block';
-      document.getElementById('demo-code-show').textContent = data.demo_code || '------';
-      toast('Kod yuborildi!');
-    }
-  } catch(e) { toast('Xato! Internet aloqasini tekshiring.'); }
-}
-
-async function verifyCode() {
-  const phone = document.getElementById('inp-phone').value.trim();
-  const code = document.getElementById('inp-code').value.trim();
-  const name = document.getElementById('inp-name').value.trim();
-  const car_model = document.getElementById('inp-car').value.trim();
-  const car_number = document.getElementById('inp-plate').value.trim();
-  const route_id = document.getElementById('inp-route').value;
-  if (!code) return toast('Kodni kiriting!');
-  try {
-    const body = {phone, code};
-    if (currentRole === 'driver') {
-      body.name = name;
-      body.car_model = car_model;
-      body.car_number = car_number;
-      if (route_id) body.route_id = parseInt(route_id);
-    }
-    const res = await fetch(API + '/auth/verify-code', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    if (data.success) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      token = data.token;
-      user = data.user;
-      goHome();
-    } else {
-      toast(data.detail || 'Xato kod!');
-    }
-  } catch(e) { toast('Xato!'); }
-}
-
-function goHome() {
-  if (!user) return showScreen('login');
-  if (user.role === 'admin') return showScreen('admin-panel');
-  if (user.role === 'driver') {
-    if (!user.is_approved) return showScreen('waiting');
-    loadDriverProfile();
-    showScreen('driver-home');
-  } else {
-    document.getElementById('client-name').textContent = 'Salom, ' + (user.name || 'Mehmon') + '!';
-    loadClientRoutes();
-    showScreen('client-home');
+    routesData = await res.json();
+    renderRoutes(routesData);
+  } catch(e) {
+    document.getElementById('routes-list').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div>Yuklab bo\'lmadi</div>';
   }
 }
 
-async function loadDriverProfile() {
-  try {
-    const res = await fetch(API + '/driver/profile', {
-      headers: {'Authorization': 'Bearer ' + token}
-    });
-    const data = await res.json();
-    document.getElementById('driver-name-show').textContent = data.name || 'Haydovchi';
-    document.getElementById('days-left').textContent = (data.days_left || 0) + ' kun';
-    document.getElementById('car-show').textContent = (data.car_model || '') + ' ' + (data.car_number || '');
-    const sw = document.getElementById('status-switch');
-    if (data.is_online) { sw.classList.add('on'); document.getElementById('status-text').textContent = 'Online'; }
-  } catch(e) {}
-}
-
-async function toggleStatus() {
-  const sw = document.getElementById('status-switch');
-  const isOn = sw.classList.contains('on');
-  try {
-    const res = await fetch(API + '/driver/toggle-status', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
-      body: JSON.stringify({is_online: !isOn})
-    });
-    const data = await res.json();
-    if (data.success) {
-      sw.classList.toggle('on');
-      document.getElementById('status-text').textContent = data.is_online ? 'Online' : 'Offline';
-    }
-  } catch(e) { toast('Xato!'); }
-}
-
-async function loadClientRoutes() {
-  try {
-    const res = await fetch(API + '/client/routes');
-    const routes = await res.json();
-    const list = document.getElementById('routes-list');
-    list.innerHTML = '';
-    routes.forEach(r => {
-      list.innerHTML += `
-        <div class="route-card" onclick="loadDrivers(${r.id}, '${r.name}')">
-          <div class="route-name">🛣 ${r.name}</div>
-          <div class="route-info">
-            <span><span class="online-dot">●</span> ${r.online_drivers} online</span>
-            <span>👥 ${r.total_drivers} haydovchi</span>
-          </div>
-        </div>`;
-    });
-  } catch(e) { toast('Yo\'nalishlarni yuklab bo\'lmadi!'); }
+function renderRoutes(routes) {
+  const list = document.getElementById('routes-list');
+  if (!routes.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🛣</div>Yo\'nalish topilmadi</div>';
+    return;
+  }
+  list.innerHTML = routes.map(r => `
+    <div class="route-card" onclick="loadDrivers(${r.id},'${r.name}')">
+      <div class="route-left">
+        <div class="route-name">🛣 ${r.name}</div>
+        <div class="route-stats">
+          <span><span class="online-badge">●</span> ${r.online_drivers} online</span>
+          <span>👥 ${r.total_drivers} haydovchi</span>
+        </div>
+      </div>
+      <div class="route-arrow">›</div>
+    </div>`).join('');
 }
 
 async function loadDrivers(routeId, routeName) {
-  document.getElementById('route-title').textContent = routeName;
+  document.getElementById('drivers-title').textContent = routeName;
+  document.getElementById('drivers-sub').textContent = 'Haydovchilar ro\'yxati';
+  document.getElementById('drivers-list').innerHTML = '<div class="loader">⏳ Yuklanmoqda...</div>';
   showScreen('drivers-screen');
   try {
     const res = await fetch(API + '/client/drivers/' + routeId);
     const drivers = await res.json();
-    const list = document.getElementById('drivers-list');
-    list.innerHTML = '';
-    if (drivers.length === 0) {
-      list.innerHTML = '<div style="text-align:center;color:#aaa;padding:30px">Haydovchi topilmadi</div>';
-      return;
-    }
-    drivers.forEach(d => {
-      const online = d.is_online;
-      list.innerHTML += `
-        <div class="driver-card">
-          <div class="driver-header">
-            <div class="driver-name">👤 ${d.name}</div>
-            <div class="driver-status ${online ? 'status-online' : 'status-offline'}">
-              ${online ? '● Online' : '○ Offline'}
-            </div>
-          </div>
-          <div class="driver-car">🚗 ${d.car_model || ''} • ${d.car_number || ''}</div>
-          <div class="driver-btns">
-            <button class="btn-chat" onclick="startChat(${d.id}, '${d.name}')">💬 Chat</button>
-            <button class="btn-call" onclick="callDriver('${d.phone}')">📞 Qo'ng'iroq</button>
-          </div>
-        </div>`;
-    });
-  } catch(e) { toast('Xato!'); }
+    renderDriversList(drivers, 'drivers-list');
+  } catch(e) {
+    document.getElementById('drivers-list').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div>Yuklab bo\'lmadi</div>';
+  }
 }
 
-function callDriver(phone) {
-  window.location.href = 'tel:' + phone;
-}
-
-function startChat(driverId, driverName) {
-  toast(driverName + ' ga xabar yuborish — tez orada!');
-}
-
-async function adminLogin() {
-  const username = document.getElementById('admin-user').value;
-  const password = document.getElementById('admin-pass').value;
-  try {
-    const res = await fetch(API + '/auth/admin-login', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({username, password})
-    });
-    const data = await res.json();
-    if (data.success) {
-      localStorage.setItem('token', data.token);
-      token = data.token;
-      user = {role: 'admin', name: 'Admin'};
-      localStorage.setItem('user', JSON.stringify(user));
-      toast('Admin sifatida kirish muvaffaqiyatli!');
-      setTimeout(() => showScreen('login'), 1000);
-    } else {
-      toast('Login yoki parol xato!');
-    }
-  } catch(e) { toast('Xato!'); }
-}
-
-function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  token = null;
-  user = null;
-  showScreen('login');
-}
-
-// Auto login
-if (token && user) goHome();
-</script>
-</body>
-</html>
+function renderDriversList(drivers, containerId) {
+  const list = document.getElementById(containerId);
+  if (!drivers.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🚗</div>Haydovchi topilmadi</div>';
+    return;
+  }
+  list.innerHTML = drivers.map(d => `
+    <div class="driver-card">
+      <div class="driver-top">
+        <div class="driver-name">👤 ${d.name}</div>
+        <span class="status-badge ${d.is_online ? 'status-on' : 'status-off'}">${d.is_online ? '● Online' : '○ Offline'}</span>
+      </div>
+      <div class="driver-car">🚗 ${d.car_model || '-'} • ${d.car_number || '-'}</div>
+      <div class="driver-actions">
+        <bu
