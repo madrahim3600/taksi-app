@@ -1,47 +1,142 @@
-from datetime import datetime, timedelta
-from typing import Optional
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-import os, random, string
+from datetime import datetime, timedelta
+from pydantic import BaseModel
+from typing import Optional
+import os
+import httpx
+
 from database import get_db
-from models import User
+from models import User, VerificationCode
+from auth import create_access_token, generate_code
 
-SECRET_KEY = os.getenv("SECRET_KEY", "fallback_key")
-ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 43200))
+router = APIRouter(prefix="/auth", tags=["auth"])
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-security = HTTPBearer()
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
-def generate_code():
-    return ''.join(random.choices(string.digits, k=6))
+class SendCodeRequest(BaseModel):
+    phone: str
+    role: str = "client"
+    telegram_id: Optional[str] = None
 
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+class VerifyCodeRequest(BaseModel):
+    phone: str
+    code: str
+    name: Optional[str] = None
+    car_model: Optional[str] = None
+    car_number: Optional[str] = None
+    route_id: Optional[int] = None
+    telegram_id: Optional[str] = None
 
-def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+class AdminLoginRequest(BaseModel):
+    username: str
+    password: str
+
+async def send_telegram_code(telegram_id: str, code: str, name: str = ""):
+    if not TELEGRAM_BOT_TOKEN or not telegram_id:
+        return False
     try:
-        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Noto'g'ri token")
-        return int(user_id)
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Token yaroqsiz")
+        text = f"🚖 *TaksiBor* tasdiqlash kodi:\n\n`{code}`\n\nKod 10 daqiqa amal qiladi."
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        async with httpx.AsyncClient() as client:
+            res = await client.post(url, json={
+                "chat_id": telegram_id,
+                "text": text,
+                "parse_mode": "Markdown"
+            })
+            return res.status_code == 200
+    except:
+        return False
 
-def get_current_user(user_id: int = Depends(verify_token), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
+@router.post("/send-code")
+async def send_code(request: SendCodeRequest, db: Session = Depends(get_db)):
+    code = generate_code()
+    expires = datetime.utcnow() + timedelta(minutes=10)
+    db.query(VerificationCode).filter(
+        VerificationCode.phone == request.phone
+    ).delete()
+    verification = VerificationCode(
+        phone=request.phone,
+        code=code,
+        expires_at=expires
+    )
+    db.add(verification)
+    db.commit()
+
+    telegram_sent = False
+    if request.telegram_id:
+        telegram_sent = await send_telegram_code(request.telegram_id, code)
+
+    print(f"KOD: {request.phone} -> {code}")
+
+    return {
+        "success": True,
+        "message": "Kod yuborildi",
+        "telegram_sent": telegram_sent,
+        "demo_code": code if not telegram_sent else None
+    }
+
+@router.post("/verify-code")
+async def verify_code(request: VerifyCodeRequest, db: Session = Depends(get_db)):
+    verification = db.query(VerificationCode).filter(
+        VerificationCode.phone == request.phone,
+        VerificationCode.code == request.code,
+        VerificationCode.is_used == False,
+        VerificationCode.expires_at > datetime.utcnow()
+    ).first()
+    if not verification:
+        raise HTTPException(status_code=400, detail="Noto'g'ri yoki muddati o'tgan kod")
+    verification.is_used = True
+    db.commit()
+
+    user = db.query(User).filter(User.phone == request.phone).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Foydalanuvchi topilmadi")
-    return user
+        is_driver = bool(request.car_model)
+        user = User(
+            phone=request.phone,
+            name=request.name or f"Foydalanuvchi_{request.phone[-4:]}",
+            role="driver" if is_driver else "client",
+            is_approved=not is_driver,
+            car_model=request.car_model,
+            car_number=request.car_number,
+            route_id=request.route_id,
+        )
+        if request.telegram_id:
+            user.avatar = request.telegram_id
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    else:
+        if request.telegram_id:
+            user.avatar = request.telegram_id
+            db.commit()
 
-def get_admin_user(current_user: User = Depends(get_current_user)):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Ruxsat yo'q")
-    return current_user
+    token = create_access_token(data={"sub": str(user.id)})
+    return {
+        "success": True,
+        "token": token,
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "phone": user.phone,
+            "role": user.role,
+            "is_approved": user.is_approved,
+            "car_model": user.car_model,
+            "car_number": user.car_number
+        }
+    }
+
+@router.post("/admin-login")
+async def admin_login(request: AdminLoginRequest, db: Session = Depends(get_db)):
+    admin_username = os.getenv("ADMIN_USERNAME", "admin")
+    admin_password = os.getenv("ADMIN_PASSWORD", "Admin2024!")
+    if request.username != admin_username or request.password != admin_password:
+        raise HTTPException(status_code=401, detail="Login yoki parol noto'g'ri")
+    admin = db.query(User).filter(User.role == "admin").first()
+    if not admin:
+        admin = User(phone="admin", name="Administrator", role="admin", is_approved=True)
+        db.add(admin)
+        db.commit()
+        db.refresh(admin)
+    token = create_access_token(data={"sub": str(admin.id)})
+    return {"success": True, "token": token}
