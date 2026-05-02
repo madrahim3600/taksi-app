@@ -2,166 +2,174 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel - TaksiBor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Admin - TaksiBor</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',sans-serif;background:#0f0c29;color:white;min-height:100vh}
-.header{background:rgba(255,255,255,0.05);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.1)}
-.header-title{font-size:20px;font-weight:700;color:#ffd200}
-.logout-btn{background:rgba(255,0,0,0.2);border:1px solid rgba(255,0,0,0.3);color:#ff6b6b;padding:8px 15px;border-radius:8px;font-size:13px;cursor:pointer}
-.tabs{display:flex;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.1);overflow-x:auto}
-.tab{padding:15px 20px;font-size:14px;cursor:pointer;white-space:nowrap;color:#aaa;border-bottom:2px solid transparent;transition:all 0.2s}
-.tab.active{color:#ffd200;border-bottom-color:#ffd200}
+body{font-family:'Segoe UI',sans-serif;background:#1a1a2e;color:white;min-height:100vh}
+.header{padding:15px 20px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center}
+.header-title{font-size:18px;font-weight:700;color:#ffd200}
+.lbtn{background:rgba(255,0,0,0.15);border:1px solid rgba(255,0,0,0.25);color:#ff6b6b;padding:8px 15px;border-radius:10px;font-size:13px;cursor:pointer}
+.tabs{display:flex;background:rgba(255,255,255,0.02);border-bottom:1px solid rgba(255,255,255,0.06);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:14px 16px;font-size:13px;cursor:pointer;white-space:nowrap;color:#666;border-bottom:2px solid transparent;transition:all 0.2s;flex-shrink:0}
+.tab.on{color:#ffd200;border-bottom-color:#ffd200}
 .content{padding:20px;display:none}
-.content.active{display:block}
+.content.on{display:block}
 
-/* Stats */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-.stat-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px;text-align:center}
-.stat-num{font-size:32px;font-weight:700;color:#ffd200}
-.stat-label{font-size:13px;color:#aaa;margin-top:5px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px}
+.stat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;text-align:center}
+.stat-n{font-size:30px;font-weight:700;color:#ffd200}
+.stat-l{font-size:12px;color:#666;margin-top:4px}
 
-/* Cards */
-.driver-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px;margin-bottom:12px}
-.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.card-name{font-size:16px;font-weight:600}
-.card-phone{font-size:13px;color:#aaa;margin-bottom:5px}
-.card-car{font-size:13px;color:#aaa;margin-bottom:12px}
-.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
-.badge-pending{background:rgba(255,165,0,0.2);color:orange;border:1px solid orange}
-.badge-approved{background:rgba(0,255,136,0.2);color:#00ff88;border:1px solid #00ff88}
-.badge-online{background:rgba(0,255,136,0.2);color:#00ff88}
-.badge-offline{background:rgba(255,255,255,0.1);color:#aaa}
-.card-actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn{padding:8px 14px;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600}
-.btn-approve{background:linear-gradient(135deg,#00b09b,#96c93d);color:white}
-.btn-reject{background:rgba(255,0,0,0.2);color:#ff6b6b;border:1px solid rgba(255,0,0,0.3)}
-.btn-days{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
-.btn-delete{background:rgba(255,0,0,0.1);color:#ff6b6b;border:1px solid rgba(255,0,0,0.2)}
-.days-info{font-size:13px;color:#ffd200;margin-bottom:8px}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;margin-bottom:10px}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.card-name{font-size:15px;font-weight:600}
+.card-phone{font-size:13px;color:#666;margin-bottom:4px}
+.card-car{font-size:13px;color:#666;margin-bottom:10px}
+.card-days{font-size:13px;color:#ffd200;margin-bottom:8px}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.b-wait{background:rgba(255,165,0,0.15);color:orange;border:1px solid rgba(255,165,0,0.3)}
+.b-ok{background:rgba(0,255,136,0.1);color:#00ff88;border:1px solid rgba(0,255,136,0.2)}
+.b-on{color:#00ff88;font-size:12px}
+.b-off{color:#555;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:8px 14px;border:none;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600}
+.btn-ok{background:linear-gradient(135deg,#00b09b,#96c93d);color:white}
+.btn-warn{background:rgba(255,165,0,0.2);color:orange;border:1px solid rgba(255,165,0,0.3)}
+.btn-red{background:rgba(255,0,0,0.1);color:#ff6b6b;border:1px solid rgba(255,0,0,0.2)}
+.btn-blue{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
+.btn-yellow{background:linear-gradient(135deg,#f7971e,#ffd200);color:#1a1a2e}
 
-/* Input */
-.input{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:white;padding:10px 15px;font-size:14px;outline:none;width:100%}
-.input:focus{border-color:#ffd200}
-.form-row{display:flex;gap:10px;margin-bottom:15px}
-.form-row .input{flex:1}
-.btn-primary{padding:12px 20px;background:linear-gradient(135deg,#f7971e,#ffd200);border:none;border-radius:10px;color:#333;font-size:15px;font-weight:700;cursor:pointer;width:100%}
+.inp{width:100%;padding:13px 15px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.1);border-radius:12px;color:white;font-size:14px;outline:none;font-family:inherit}
+.inp:focus{border-color:#f7971e}
+.igrp{margin-bottom:12px}
+.ilbl{font-size:12px;color:#666;margin-bottom:6px;display:block}
+.pbtn{width:100%;padding:14px;background:linear-gradient(135deg,#f7971e,#ffd200);border:none;border-radius:12px;color:#1a1a2e;font-size:15px;font-weight:700;cursor:pointer;margin-top:5px}
+.section-title{font-size:14px;color:#888;font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px}
 
-/* Messages */
-.msg-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-bottom:10px}
-.msg-sender{font-size:13px;color:#ffd200;margin-bottom:5px}
-.msg-text{font-size:15px;margin-bottom:8px}
-.msg-time{font-size:12px;color:#aaa}
-.btn-del-msg{background:rgba(255,0,0,0.1);color:#ff6b6b;border:1px solid rgba(255,0,0,0.2);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer}
+.gcard{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;margin-bottom:10px}
+.gname{font-size:15px;font-weight:600;margin-bottom:5px}
+.gdesc{font-size:13px;color:#666;margin-bottom:8px}
+.gcode{font-size:12px;color:#555;margin-bottom:10px}
+.gbtns{display:flex;gap:8px}
 
-/* Routes */
-.route-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-
-/* Toast */
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:12px 25px;border-radius:25px;font-size:14px;display:none;z-index:999;white-space:nowrap}
-
-/* Modal */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;align-items:center;justify-content:center}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:center;justify-content:center;padding:20px}
 .modal.open{display:flex}
-.modal-box{background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:25px;width:90%;max-width:350px}
-.modal-title{font-size:18px;font-weight:700;margin-bottom:20px}
-.modal-btns{display:flex;gap:10px;margin-top:15px}
+.mbox{background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:25px;width:100%;max-width:340px}
+.mtitle{font-size:17px;font-weight:700;margin-bottom:18px}
+.mbtns{display:flex;gap:10px;margin-top:15px}
 
-.empty{text-align:center;color:#aaa;padding:40px 20px;font-size:15px}
-.section-title{font-size:16px;font-weight:600;margin-bottom:15px;color:#ffd200}
+.empty{text-align:center;color:#555;padding:30px;font-size:14px}
+.toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:rgba(20,20,40,0.97);color:white;padding:12px 25px;border-radius:25px;font-size:14px;z-index:9999;display:none;border:1px solid rgba(255,255,255,0.1);white-space:nowrap}
+
+.driver-select{margin-bottom:10px}
+.search-bar{width:100%;padding:12px 15px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.1);border-radius:12px;color:white;font-size:14px;outline:none;margin-bottom:15px}
+.search-bar:focus{border-color:#f7971e}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-title">⚙️ Admin Panel</div>
-  <button class="logout-btn" onclick="logout()">Chiqish</button>
+  <button class="lbtn" id="btn-logout">Chiqish</button>
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('stats')">📊 Statistika</div>
-  <div class="tab" onclick="switchTab('pending')">⏳ Kutmoqda</div>
-  <div class="tab" onclick="switchTab('drivers')">🚗 Haydovchilar</div>
-  <div class="tab" onclick="switchTab('messages')">💬 Xabarlar</div>
-  <div class="tab" onclick="switchTab('routes')">🛣 Yo'nalishlar</div>
-  <div class="tab" onclick="switchTab('settings')">🔐 Sozlamalar</div>
+  <div class="tab on" onclick="tab('stats')">📊 Statistika</div>
+  <div class="tab" onclick="tab('pending')">⏳ Kutmoqda</div>
+  <div class="tab" onclick="tab('drivers')">🚗 Haydovchilar</div>
+  <div class="tab" onclick="tab('groups')">👥 Guruhlar</div>
+  <div class="tab" onclick="tab('messages')">💬 Xabarlar</div>
 </div>
 
-<!-- Statistika -->
-<div class="content active" id="tab-stats">
+<!-- STATS -->
+<div class="content on" id="tab-stats">
   <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-num" id="s-total">0</div>
-      <div class="stat-label">Jami haydovchilar</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="s-active">0</div>
-      <div class="stat-label">Faol obunalar</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="s-online">0</div>
-      <div class="stat-label">Online foydalanuvchilar</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="s-pending">0</div>
-      <div class="stat-label">Tasdiq kutmoqda</div>
-    </div>
+    <div class="stat"><div class="stat-n" id="s-drivers">0</div><div class="stat-l">Haydovchilar</div></div>
+    <div class="stat"><div class="stat-n" id="s-subs">0</div><div class="stat-l">Faol obunalar</div></div>
+    <div class="stat"><div class="stat-n" id="s-online">0</div><div class="stat-l">Online</div></div>
+    <div class="stat"><div class="stat-n" id="s-pending">0</div><div class="stat-l">Kutmoqda</div></div>
+    <div class="stat" style="grid-column:span 2"><div class="stat-n" id="s-groups">0</div><div class="stat-l">Guruhlar</div></div>
   </div>
-  <button class="btn-primary" onclick="loadStats()">🔄 Yangilash</button>
+  <button class="pbtn" onclick="loadStats()">🔄 Yangilash</button>
 </div>
 
-<!-- Kutmoqda -->
+<!-- PENDING -->
 <div class="content" id="tab-pending">
-  <div class="section-title">Tasdiq kutayotgan haydovchilar</div>
+  <div class="section-title">Tasdiq kutayotganlar</div>
   <div id="pending-list"></div>
 </div>
 
-<!-- Haydovchilar -->
+<!-- DRIVERS -->
 <div class="content" id="tab-drivers">
-  <div class="section-title">Barcha haydovchilar</div>
-  <div style="margin-bottom:15px">
-    <input type="text" class="input" placeholder="🔍 Qidirish..." oninput="filterDrivers(this.value)">
-  </div>
+  <input class="search-bar" placeholder="🔍 Ism yoki telefon bo'yicha qidirish..." oninput="filterDrivers(this.value)">
   <div id="drivers-list"></div>
 </div>
 
-<!-- Xabarlar -->
+<!-- GROUPS -->
+<div class="content" id="tab-groups">
+  <div class="section-title">Yangi guruh yaratish</div>
+  <div class="card">
+    <div class="igrp"><label class="ilbl">Guruh nomi</label><input class="inp" id="g-name" placeholder="Masalan: Toshkent - Andijon"></div>
+    <div class="igrp"><label class="ilbl">Tavsif (ixtiyoriy)</label><input class="inp" id="g-desc" placeholder="Qisqacha ma'lumot"></div>
+    <button class="pbtn" onclick="createGroup()">➕ Guruh yaratish</button>
+  </div>
+  <div class="section-title" style="margin-top:20px">Mavjud guruhlar</div>
+  <div id="groups-list"></div>
+</div>
+
+<!-- MESSAGES -->
 <div class="content" id="tab-messages">
-  <div class="section-title">Barcha xabarlar</div>
+  <div class="section-title">So'nggi xabarlar</div>
   <div id="messages-list"></div>
 </div>
 
-<!-- Yo'nalishlar -->
-<div class="content" id="tab-routes">
-  <div class="section-title">Yo'nalish qo'shish</div>
-  <div class="form-row">
-    <input type="text" class="input" id="route-from" placeholder="Qayerdan">
-    <input type="text" class="input" id="route-to" placeholder="Qayerga">
-  </div>
-  <button class="btn-primary" onclick="addRoute()" style="margin-bottom:20px">➕ Qo'shish</button>
-  <div class="section-title">Mavjud yo'nalishlar</div>
-  <div id="routes-list"></div>
-</div>
-
-<!-- Sozlamalar -->
-<div class="content" id="tab-settings">
-  <div class="section-title">Admin parolini o'zgartirish</div>
-  <div style="margin-bottom:15px">
-    <input type="password" class="input" id="new-pass" placeholder="Yangi parol" style="margin-bottom:10px">
-    <input type="password" class="input" id="new-pass2" placeholder="Parolni takrorlang">
-  </div>
-  <button class="btn-primary" onclick="changePassword()">💾 Saqlash</button>
-</div>
-
-<!-- Days Modal -->
+<!-- DAYS MODAL -->
 <div class="modal" id="days-modal">
-  <div class="modal-box">
-    <div class="modal-title">📅 Kun qo'shish</div>
-    <input type="number" class="input" id="days-input" placeholder="Necha kun?" min="1" max="365">
-    <div class="modal-btns">
-      <button class="btn btn-approve" style="flex:1" onclick="confirmAddDays()">Qo'shish</button>
-      <button class="btn btn-reject" style="flex:1" onclick="closeModal()">Bekor</button>
+  <div class="mbox">
+    <div class="mtitle">📅 Kun qo'shish</div>
+    <div class="igrp"><input class="inp" id="days-inp" type="number" placeholder="Necha kun? (masalan: 30)" min="1" max="365"></div>
+    <div class="mbtns">
+      <button class="btn btn-ok" style="flex:1" onclick="confirmDays()">✅ Qo'shish</button>
+      <button class="btn btn-red" style="flex:1" onclick="closeModal('days-modal')">❌ Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- GROUP DRIVERS MODAL -->
+<div class="modal" id="gd-modal">
+  <div class="mbox">
+    <div class="mtitle" id="gd-title">Guruh haydovchilari</div>
+    <div id="gd-list"></div>
+    <button class="btn btn-blue" style="width:100%;margin-top:10px" onclick="closeModal('gd-modal')">Yopish</button>
+  </div>
+</div>
+
+<!-- ADD DRIVER TO GROUP MODAL -->
+<div class="modal" id="add-driver-modal">
+  <div class="mbox">
+    <div class="mtitle">Haydovchi qo'shish</div>
+    <div class="igrp">
+      <label class="ilbl">Guruh tanlang</label>
+      <select class="inp" id="add-group-sel"></select>
+    </div>
+    <div class="mbtns">
+      <button class="btn btn-ok" style="flex:1" onclick="confirmAddToGroup()">✅ Qo'shish</button>
+      <button class="btn btn-red" style="flex:1" onclick="closeModal('add-driver-modal')">❌ Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT GROUP MODAL -->
+<div class="modal" id="edit-group-modal">
+  <div class="mbox">
+    <div class="mtitle">✏️ Guruhni tahrirlash</div>
+    <input type="hidden" id="edit-group-id">
+    <div class="igrp"><label class="ilbl">Guruh nomi</label><input class="inp" id="edit-g-name" placeholder="Guruh nomi"></div>
+    <div class="igrp"><label class="ilbl">Tavsif</label><input class="inp" id="edit-g-desc" placeholder="Tavsif"></div>
+    <div class="mbtns">
+      <button class="btn btn-ok" style="flex:1" onclick="confirmEditGroup()">💾 Saqlash</button>
+      <button class="btn btn-red" style="flex:1" onclick="closeModal('edit-group-modal')">❌ Bekor</button>
     </div>
   </div>
 </div>
@@ -173,247 +181,278 @@ const API = 'https://taksi-app.onrender.com';
 let token = localStorage.getItem('token');
 let allDrivers = [];
 let selectedDriverId = null;
+let selectedGroupId = null;
 
 if (!token) window.location.href = 'index.html';
 
-function toast(msg, color) {
+function toast(text) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.background = color || '#333';
+  t.textContent = text;
   t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 3000);
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.style.display = 'none', 3000);
 }
 
-function switchTab(name) {
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function req(path, method, body) {
+  try {
+    const r = await fetch(API + path, {
+      method: method || 'GET',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: body ? JSON.stringify(body) : undefined
+    });
+    if (r.status === 401) { logout(); return null; }
+    return r.json();
+  } catch(e) { toast('🌐 Xato!'); return null; }
+}
+
+function tab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => {
-    const names = ['stats','pending','drivers','messages','routes','settings'];
-    t.classList.toggle('active', names[i] === name);
+    const names = ['stats','pending','drivers','groups','messages'];
+    t.classList.toggle('on', names[i] === name);
   });
-  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('on'));
+  document.getElementById('tab-'+name).classList.add('on');
   if (name === 'stats') loadStats();
   if (name === 'pending') loadPending();
   if (name === 'drivers') loadDrivers();
+  if (name === 'groups') loadGroups();
   if (name === 'messages') loadMessages();
-  if (name === 'routes') loadRoutes();
-}
-
-async function api(path, method, body) {
-  const res = await fetch(API + path, {
-    method: method || 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
-    },
-    body: body ? JSON.stringify(body) : undefined
-  });
-  if (res.status === 401) { logout(); return null; }
-  return res.json();
 }
 
 async function loadStats() {
-  const data = await api('/admin/stats');
-  if (!data) return;
-  document.getElementById('s-total').textContent = data.total_drivers || 0;
-  document.getElementById('s-active').textContent = data.active_subscriptions || 0;
-  document.getElementById('s-online').textContent = data.online_users || 0;
-  document.getElementById('s-pending').textContent = data.pending_drivers || 0;
+  const d = await req('/admin/stats');
+  if (!d) return;
+  document.getElementById('s-drivers').textContent = d.total_drivers || 0;
+  document.getElementById('s-subs').textContent = d.active_subscriptions || 0;
+  document.getElementById('s-online').textContent = d.online_users || 0;
+  document.getElementById('s-pending').textContent = d.pending_drivers || 0;
+  document.getElementById('s-groups').textContent = d.total_groups || 0;
 }
 
 async function loadPending() {
-  const drivers = await api('/admin/drivers');
+  const drivers = await req('/admin/drivers');
   if (!drivers) return;
   const pending = drivers.filter(d => !d.is_approved);
-  const list = document.getElementById('pending-list');
-  if (pending.length === 0) {
-    list.innerHTML = '<div class="empty">✅ Tasdiq kutayotgan haydovchi yo\'q</div>';
-    return;
-  }
-  list.innerHTML = pending.map(d => `
-    <div class="driver-card">
-      <div class="card-header">
+  const el = document.getElementById('pending-list');
+  if (!pending.length) { el.innerHTML = '<div class="empty">✅ Tasdiq kutayotgan yo\'q</div>'; return; }
+  el.innerHTML = pending.map(d => `
+    <div class="card">
+      <div class="card-top">
         <div class="card-name">👤 ${d.name}</div>
-        <span class="badge badge-pending">Kutmoqda</span>
+        <span class="badge b-wait">Kutmoqda</span>
       </div>
       <div class="card-phone">📞 ${d.phone}</div>
-      <div class="card-car">🚗 ${d.car_model || '-'} • ${d.car_number || '-'}</div>
-      <div class="card-actions">
-        <button class="btn btn-approve" onclick="approveDriver(${d.id}, true)">✅ Tasdiqlash</button>
-        <button class="btn btn-reject" onclick="approveDriver(${d.id}, false)">❌ Rad etish</button>
+      <div class="card-car">🚗 ${d.car_model||'-'} • ${d.car_number||'-'}</div>
+      <div class="actions">
+        <button class="btn btn-ok" onclick="approveDriver(${d.id},true)">✅ Tasdiqlash</button>
+        <button class="btn btn-red" onclick="approveDriver(${d.id},false)">❌ Rad etish</button>
       </div>
     </div>`).join('');
 }
 
 async function loadDrivers() {
-  const drivers = await api('/admin/drivers');
+  const drivers = await req('/admin/drivers');
   if (!drivers) return;
   allDrivers = drivers;
   renderDrivers(drivers);
 }
 
-function renderDrivers(drivers) {
-  const list = document.getElementById('drivers-list');
-  if (drivers.length === 0) {
-    list.innerHTML = '<div class="empty">Haydovchi topilmadi</div>';
-    return;
-  }
-  list.innerHTML = drivers.map(d => `
-    <div class="driver-card">
-      <div class="card-header">
+function renderDrivers(list) {
+  const el = document.getElementById('drivers-list');
+  if (!list.length) { el.innerHTML = '<div class="empty">Haydovchi yo\'q</div>'; return; }
+  el.innerHTML = list.map(d => `
+    <div class="card">
+      <div class="card-top">
         <div class="card-name">👤 ${d.name}</div>
-        <span class="badge ${d.is_online ? 'badge-online' : 'badge-offline'}">${d.is_online ? '● Online' : '○ Offline'}</span>
+        <span class="${d.is_online ? 'b-on' : 'b-off'}">${d.is_online ? '● Online' : '○ Offline'}</span>
       </div>
       <div class="card-phone">📞 ${d.phone}</div>
-      <div class="card-car">🚗 ${d.car_model || '-'} • ${d.car_number || '-'}</div>
-      <div class="days-info">📅 Obuna: ${d.days_left !== null ? d.days_left + ' kun' : 'Berilmagan'}</div>
-      <div class="card-actions">
-        <button class="btn btn-days" onclick="openDaysModal(${d.id})">➕ Kun</button>
-        <button class="btn btn-reject" onclick="resetSub(${d.id})">⏹ Nol</button>
-        <button class="btn ${d.is_approved ? 'btn-reject' : 'btn-approve'}" onclick="approveDriver(${d.id}, ${!d.is_approved})">${d.is_approved ? '🔒 Bloklash' : '✅ Ochish'}</button>
-        <button class="btn btn-delete" onclick="deleteDriver(${d.id})">🗑</button>
+      <div class="card-car">🚗 ${d.car_model||'-'} • ${d.car_number||'-'}</div>
+      <div class="card-days">📅 Obuna: ${d.days_left !== null ? d.days_left+' kun' : 'Berilmagan'}</div>
+      <div class="actions">
+        <button class="btn btn-yellow" onclick="openDaysModal(${d.id})">➕ Kun</button>
+        <button class="btn btn-warn" onclick="resetSub(${d.id})">⏹ Nol</button>
+        <button class="btn btn-blue" onclick="openAddToGroup(${d.id})">${d.is_approved ? '👥 Guruh' : '✅ Tasdiqlash'}</button>
+        <button class="btn ${d.is_approved ? 'btn-red' : 'btn-ok'}" onclick="approveDriver(${d.id},${!d.is_approved})">${d.is_approved ? '🔒 Blok' : '✅ Ochish'}</button>
+        <button class="btn btn-red" onclick="deleteDriver(${d.id})">🗑</button>
       </div>
     </div>`).join('');
 }
 
 function filterDrivers(q) {
   const filtered = allDrivers.filter(d =>
-    d.name.toLowerCase().includes(q.toLowerCase()) ||
-    d.phone.includes(q)
+    d.name.toLowerCase().includes(q.toLowerCase()) || d.phone.includes(q)
   );
   renderDrivers(filtered);
 }
 
 async function approveDriver(id, approved) {
-  const data = await api('/admin/approve', 'POST', {user_id: id, approved});
-  if (data && data.success) {
-    toast(approved ? '✅ Tasdiqlandi!' : '❌ Blok qilindi!', approved ? '#00b09b' : '#ff6b6b');
-    loadPending();
-    loadDrivers();
-    loadStats();
+  const d = await req('/admin/approve', 'POST', {user_id: id, approved});
+  if (d && d.success) {
+    toast(approved ? '✅ Tasdiqlandi!' : '❌ Blok qilindi!');
+    loadPending(); loadDrivers(); loadStats();
   }
 }
 
 function openDaysModal(id) {
   selectedDriverId = id;
-  document.getElementById('days-input').value = '';
-  document.getElementById('days-modal').classList.add('open');
+  document.getElementById('days-inp').value = '';
+  openModal('days-modal');
 }
 
-function closeModal() {
-  document.getElementById('days-modal').classList.remove('open');
-  selectedDriverId = null;
-}
-
-async function confirmAddDays() {
-  const days = parseInt(document.getElementById('days-input').value);
+async function confirmDays() {
+  const days = parseInt(document.getElementById('days-inp').value);
   if (!days || days < 1) return toast('Kunlar sonini kiriting!');
-  const data = await api('/admin/add-days', 'POST', {user_id: selectedDriverId, days});
-  if (data && data.success) {
-    toast('✅ ' + days + ' kun qo\'shildi!', '#00b09b');
-    closeModal();
-    loadDrivers();
-    loadStats();
+  const d = await req('/admin/add-days', 'POST', {user_id: selectedDriverId, days});
+  if (d && d.success) {
+    toast('✅ ' + days + ' kun qo\'shildi!');
+    closeModal('days-modal');
+    loadDrivers(); loadStats();
   }
 }
 
 async function resetSub(id) {
   if (!confirm('Obunani nolga tushirasizmi?')) return;
-  const data = await api('/admin/reset-sub/' + id, 'POST');
-  if (data && data.success) {
-    toast('⏹ Obuna nolga tushirildi!');
-    loadDrivers();
-  }
+  const d = await req('/admin/reset-sub/' + id, 'POST');
+  if (d && d.success) { toast('⏹ Nolga tushirildi!'); loadDrivers(); }
 }
 
 async function deleteDriver(id) {
   if (!confirm('Haydovchini o\'chirasizmi?')) return;
-  const data = await api('/admin/driver/' + id, 'DELETE');
-  if (data && data.success) {
-    toast('🗑 O\'chirildi!', '#ff6b6b');
+  const d = await req('/admin/driver/' + id, 'DELETE');
+  if (d && d.success) { toast('🗑 O\'chirildi!'); loadDrivers(); loadStats(); }
+}
+
+async function openAddToGroup(driverId) {
+  selectedDriverId = driverId;
+  const groups = await req('/admin/groups');
+  if (!groups) return;
+  const sel = document.getElementById('add-group-sel');
+  sel.innerHTML = groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+  openModal('add-driver-modal');
+}
+
+async function confirmAddToGroup() {
+  const groupId = parseInt(document.getElementById('add-group-sel').value);
+  const d = await req('/admin/driver-group', 'POST', {
+    driver_id: selectedDriverId,
+    group_id: groupId,
+    approved: true
+  });
+  if (d && d.success) {
+    toast('✅ Guruhga qo\'shildi!');
+    closeModal('add-driver-modal');
     loadDrivers();
-    loadStats();
   }
 }
 
-async function loadMessages() {
-  const msgs = await api('/admin/messages');
-  if (!msgs) return;
-  const list = document.getElementById('messages-list');
-  if (msgs.length === 0) {
-    list.innerHTML = '<div class="empty">Xabar yo\'q</div>';
-    return;
+async function loadGroups() {
+  const groups = await req('/admin/groups');
+  if (!groups) return;
+  const el = document.getElementById('groups-list');
+  if (!groups.length) { el.innerHTML = '<div class="empty">Guruh yo\'q</div>'; return; }
+  el.innerHTML = groups.map(g => `
+    <div class="gcard">
+      <div class="gname">👥 ${g.name}</div>
+      ${g.description ? `<div class="gdesc">${g.description}</div>` : ''}
+      <div class="gcode">🔑 Kod: <b>${g.invite_code}</b> • 👤 ${g.driver_count} haydovchi</div>
+      <div class="gbtns">
+        <button class="btn btn-blue" onclick="viewGroupDrivers(${g.id},'${g.name.replace(/'/g,"\\'")}')">👥 Ko'rish</button>
+        <button class="btn btn-warn" onclick="openEditGroup(${g.id},'${g.name.replace(/'/g,"\\'")}','${(g.description||'').replace(/'/g,"\\'")}')">✏️ Tahrir</button>
+        <button class="btn btn-red" onclick="deleteGroup(${g.id})">🗑 O'chirish</button>
+      </div>
+    </div>`).join('');
+}
+
+async function createGroup() {
+  const name = document.getElementById('g-name').value.trim();
+  const desc = document.getElementById('g-desc').value.trim();
+  if (!name) return toast('Guruh nomini kiriting!');
+  const d = await req('/admin/groups', 'POST', {name, description: desc});
+  if (d && d.success) {
+    toast('✅ Guruh yaratildi! Kod: ' + d.invite_code);
+    document.getElementById('g-name').value = '';
+    document.getElementById('g-desc').value = '';
+    loadGroups();
   }
-  list.innerHTML = msgs.map(m => `
-    <div class="msg-card">
-      <div class="msg-sender">👤 ${m.sender_name} • ${m.chat_room}</div>
-      <div class="msg-text">${m.content || '📎 Media'}</div>
+}
+
+async function viewGroupDrivers(groupId, groupName) {
+  selectedGroupId = groupId;
+  document.getElementById('gd-title').textContent = groupName + ' haydovchilari';
+  const drivers = await req('/admin/group/' + groupId + '/drivers');
+  const el = document.getElementById('gd-list');
+  if (!drivers || !drivers.length) {
+    el.innerHTML = '<div class="empty">Haydovchi yo\'q</div>';
+  } else {
+    el.innerHTML = drivers.map(d => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+        <div>
+          <div style="font-size:14px;font-weight:600">${d.name}</div>
+          <div style="font-size:12px;color:#666">${d.car_model||''} • ${d.is_online ? '🟢 Online' : '⚫ Offline'}</div>
+        </div>
+        <button class="btn btn-red" onclick="removeFromGroup(${d.id},${groupId})">Chiqarish</button>
+      </div>`).join('');
+  }
+  openModal('gd-modal');
+}
+
+async function removeFromGroup(driverId, groupId) {
+  const d = await req('/admin/driver-group', 'POST', {
+    driver_id: driverId,
+    group_id: groupId,
+    approved: false
+  });
+  if (d && d.success) {
+    toast('✅ Guruhdan chiqarildi!');
+    viewGroupDrivers(groupId, '');
+  }
+}
+
+function openEditGroup(id, name, desc) {
+  document.getElementById('edit-group-id').value = id;
+  document.getElementById('edit-g-name').value = name;
+  document.getElementById('edit-g-desc').value = desc;
+  openModal('edit-group-modal');
+}
+
+async function confirmEditGroup() {
+  const id = document.getElementById('edit-group-id').value;
+  const name = document.getElementById('edit-g-name').value.trim();
+  const desc = document.getElementById('edit-g-desc').value.trim();
+  if (!name) return toast('Nom kiriting!');
+  const d = await req('/admin/groups/' + id, 'PUT', {name, description: desc});
+  if (d && d.success) {
+    toast('✅ Saqlandi!');
+    closeModal('edit-group-modal');
+    loadGroups();
+  }
+}
+
+async function deleteGroup(id) {
+  if (!confirm('Guruhni o\'chirasizmi?')) return;
+  const d = await req('/admin/groups/' + id, 'DELETE');
+  if (d && d.success) { toast('🗑 O\'chirildi!'); loadGroups(); loadStats(); }
+}
+
+async function loadMessages() {
+  const msgs = await req('/admin/messages');
+  if (!msgs) return;
+  const el = document.getElementById('messages-list');
+  if (!msgs.length) { el.innerHTML = '<div class="empty">Xabar yo\'q</div>'; return; }
+  el.innerHTML = msgs.map(m => `
+    <div class="card">
+      <div style="font-size:12px;color:#ffd200;margin-bottom:5px">👤 ${m.sender_name}</div>
+      <div style="font-size:14px;margin-bottom:8px">${m.content||'📎 Media'}</div>
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div class="msg-time">${new Date(m.created_at).toLocaleString('uz')}</div>
-        <button class="btn-del-msg" onclick="deleteMsg(${m.id})">🗑 O'chirish</button>
+        <div style="font-size:11px;color:#555">${new Date(m.created_at).toLocaleString('uz')}</div>
+        <button class="btn btn-red" onclick="deleteMsg(${m.id})">🗑 O'chirish</button>
       </div>
     </div>`).join('');
 }
 
 async function deleteMsg(id) {
-  const data = await api('/admin/message/' + id, 'DELETE');
-  if (data && data.success) {
-    toast('🗑 Xabar o\'chirildi!');
-    loadMessages();
-  }
-}
-
-async function loadRoutes() {
-  const routes = await api('/driver/routes');
-  if (!routes) return;
-  const list = document.getElementById('routes-list');
-  list.innerHTML = routes.map(r => `
-    <div class="route-card">
-      <div>🛣 ${r.name}</div>
-      <button class="btn btn-delete" onclick="deleteRoute(${r.id})">🗑</button>
-    </div>`).join('');
-}
-
-async function addRoute() {
-  const from = document.getElementById('route-from').value.trim();
-  const to = document.getElementById('route-to').value.trim();
-  if (!from || !to) return toast('Qayerdan va qayerga kiriting!');
-  const data = await api('/admin/routes', 'POST', {
-    name: from + ' - ' + to,
-    from_city: from,
-    to_city: to
-  });
-  if (data && data.success) {
-    toast('✅ Yo\'nalish qo\'shildi!', '#00b09b');
-    document.getElementById('route-from').value = '';
-    document.getElementById('route-to').value = '';
-    loadRoutes();
-  }
-}
-
-async function deleteRoute(id) {
-  if (!confirm('Yo\'nalishni o\'chirasizmi?')) return;
-  const data = await api('/admin/route/' + id, 'DELETE');
-  if (data && data.success) {
-    toast('🗑 O\'chirildi!');
-    loadRoutes();
-  }
-}
-
-function changePassword() {
-  const p1 = document.getElementById('new-pass').value;
-  const p2 = document.getElementById('new-pass2').value;
-  if (!p1) return toast('Yangi parol kiriting!');
-  if (p1 !== p2) return toast('Parollar mos kelmaydi!');
-  toast('⚠️ Bu funksiya keyingi versiyada!');
-}
-
-function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = 'index.html';
-}
-
-loadStats();
-</script>
-</body>
-</html>
+  const d = await req('/admi
