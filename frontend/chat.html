@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat - TaksiBor</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0f0c29;color:white;height:100vh;display:flex;flex-direction:column}
+.header{background:rgba(255,255,255,0.05);padding:15px 20px;display:flex;align-items:center;gap:15px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.back-btn{background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 15px;border-radius:8px;font-size:14px;cursor:pointer}
+.chat-info{flex:1}
+.chat-name{font-size:17px;font-weight:600}
+.chat-status{font-size:12px;color:#aaa}
+.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:80%;padding:12px 16px;border-radius:16px;font-size:15px;line-height:1.4}
+.msg-out{align-self:flex-end;background:linear-gradient(135deg,#667eea,#764ba2);border-bottom-right-radius:4px}
+.msg-in{align-self:flex-start;background:rgba(255,255,255,0.1);border-bottom-left-radius:4px}
+.msg-time{font-size:11px;opacity:0.7;margin-top:5px;text-align:right}
+.msg-sender{font-size:12px;color:#ffd200;margin-bottom:4px}
+.input-area{padding:15px;background:rgba(255,255,255,0.03);border-top:1px solid rgba(255,255,255,0.1);display:flex;gap:10px;align-items:flex-end}
+.msg-input{flex:1;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;color:white;padding:12px 18px;font-size:15px;outline:none;resize:none;max-height:100px;font-family:inherit}
+.msg-input:focus{border-color:#667eea}
+.send-btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;width:46px;height:46px;border-radius:50%;font-size:20px;cursor:pointer;flex-shrink:0}
+.send-btn:active{transform:scale(0.95)}
+.date-divider{text-align:center;font-size:12px;color:#aaa;margin:10px 0}
+.empty-chat{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:#aaa}
+.empty-icon{font-size:50px}
+.typing{font-size:13px;color:#aaa;padding:5px 20px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="goBack()">←</button>
+  <div class="chat-info">
+    <div class="chat-name" id="chat-name">Chat</div>
+    <div class="chat-status" id="chat-status">Ulanmoqda...</div>
+  </div>
+</div>
+
+<div class="messages" id="messages">
+  <div class="empty-chat">
+    <div class="empty-icon">💬</div>
+    <div>Xabar yo'q. Birinchi bo'lib yozing!</div>
+  </div>
+</div>
+
+<div class="typing" id="typing" style="display:none"></div>
+
+<div class="input-area">
+  <textarea class="msg-input" id="msg-input" placeholder="Xabar yozing..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+  <button class="send-btn" onclick="sendMessage()">➤</button>
+</div>
+
+<script>
+const API = 'https://taksi-app.onrender.com';
+const WS_API = 'wss://taksi-app.onrender.com';
+let token = localStorage.getItem('token');
+let user = JSON.parse(localStorage.getItem('user') || 'null');
+let ws = null;
+let room = new URLSearchParams(window.location.search).get('room') || 'general';
+let receiverId = new URLSearchParams(window.location.search).get('receiver') || null;
+let receiverName = new URLSearchParams(window.location.search).get('name') || 'Umumiy Chat';
+
+if (!token || !user) window.location.href = 'index.html';
+
+document.getElementById('chat-name').textContent = receiverName;
+
+function goBack() {
+  if (ws) ws.close();
+  window.history.back();
+}
+
+async function loadHistory() {
+  try {
+    const res = await fetch(API + '/chat/history/' + room, {
+      headers: {'Authorization': 'Bearer ' + token}
+    });
+    const msgs = await res.json();
+    if (msgs.length > 0) {
+      document.getElementById('messages').innerHTML = '';
+      msgs.forEach(m => appendMessage(m, false));
+      scrollBottom();
+    }
+  } catch(e) {}
+}
+
+function connectWS() {
+  document.getElementById('chat-status').textContent = 'Ulanmoqda...';
+  ws = new WebSocket(`${WS_API}/chat/ws/${room}/${user.id}`);
+
+  ws.onopen = () => {
+    document.getElementById('chat-status').textContent = 'Ulandi ✓';
+  };
+
+  ws.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (data.type === 'message') {
+      if (data.sender_id !== user.id) {
+        appendMessage(data, true);
+        scrollBottom();
+      }
+    } else if (data.type === 'user_online') {
+      if (data.user_id !== user.id) {
+        document.getElementById('chat-status').textContent = data.name + ' onlayn';
+      }
+    } else if (data.type === 'user_offline') {
+      document.getElementById('chat-status').textContent = 'Offline';
+    }
+  };
+
+  ws.onclose = () => {
+    document.getElementById('chat-status').textContent = 'Uzildi. Qayta ulanish...';
+    setTimeout(connectWS, 3000);
+  };
+
+  ws.onerror = () => {
+    document.getElementById('chat-status').textContent = 'Xato!';
+  };
+}
+
+function appendMessage(msg, animate) {
+  const msgs = document.getElementById('messages');
+  const isEmpty = msgs.querySelector('.empty-chat');
+  if (isEmpty) msgs.innerHTML = '';
+
+  const isOut = msg.sender_id === user.id;
+  const div = document.createElement('div');
+  div.className = 'msg ' + (isOut ? 'msg-out' : 'msg-in');
+  if (animate) div.style.animation = 'fadeIn 0.3s ease';
+
+  const time = new Date(msg.created_at).toLocaleTimeString('uz', {hour:'2-digit', minute:'2-digit'});
+
+  div.innerHTML = `
+    ${!isOut ? `<div class="msg-sender">${msg.sender_name}</div>` : ''}
+    <div>${escapeHtml(msg.content || '')}</div>
+    <div class="msg-time">${time}</div>
+  `;
+  msgs.appendChild(div);
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function scrollBottom() {
+  const msgs = document.getElementById('messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+  const msg = {
+    content: text,
+    type: 'text',
+    receiver_id: receiverId ? parseInt(receiverId) : null
+  };
+
+  ws.send(JSON.stringify(msg));
+
+  appendMessage({
+    sender_id: user.id,
+    sender_name: user.name,
+    content: text,
+    created_at: new Date().toISOString()
+  }, false);
+
+  scrollBottom();
+  input.value = '';
+  input.style.height = 'auto';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+loadHistory();
+connectWS();
+</script>
+</body>
+</html>
