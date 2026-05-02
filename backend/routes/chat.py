@@ -1,43 +1,41 @@
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from typing import List, Dict
 import json
 from datetime import datetime
 
-from database import get_db, SessionLocal
+from database import SessionLocal
 from models import Message, User
-from taksi_auth import get_current_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: Dict[str, List[WebSocket]] = {}
+        self.rooms: Dict[str, List[WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket, room: str):
-        await websocket.accept()
-        if room not in self.active_connections:
-            self.active_connections[room] = []
-        self.active_connections[room].append(websocket)
+    async def connect(self, ws: WebSocket, room: str):
+        await ws.accept()
+        if room not in self.rooms:
+            self.rooms[room] = []
+        self.rooms[room].append(ws)
 
-    def disconnect(self, websocket: WebSocket, room: str):
-        if room in self.active_connections:
-            if websocket in self.active_connections[room]:
-                self.active_connections[room].remove(websocket)
+    def disconnect(self, ws: WebSocket, room: str):
+        if room in self.rooms and ws in self.rooms[room]:
+            self.rooms[room].remove(ws)
 
-    async def broadcast(self, message: dict, room: str):
-        if room in self.active_connections:
-            for connection in self.active_connections[room][:]:
+    async def broadcast(self, data: dict, room: str):
+        if room in self.rooms:
+            for ws in self.rooms[room][:]:
                 try:
-                    await connection.send_text(json.dumps(message))
+                    await ws.send_text(json.dumps(data))
                 except:
-                    self.active_connections[room].remove(connection)
+                    self.rooms[room].remove(ws)
 
 manager = ConnectionManager()
 
-@router.websocket("/ws/{room}/{user_id}")
-async def websocket_endpoint(websocket: WebSocket, room: str, user_id: int):
-    await manager.connect(websocket, room)
+@router.websocket("/ws/group/{group_id}/{user_id}")
+async def group_chat(ws: WebSocket, group_id: int, user_id: int):
+    room = f"group_{group_id}"
+    await manager.connect(ws, room)
     db = SessionLocal()
     user = None
     try:
@@ -51,12 +49,11 @@ async def websocket_endpoint(websocket: WebSocket, room: str, user_id: int):
             "name": user.name if user else "Noma'lum"
         }, room)
         while True:
-            data = await websocket.receive_text()
+            data = await ws.receive_text()
             msg_data = json.loads(data)
             new_msg = Message(
                 sender_id=user_id,
-                receiver_id=msg_data.get("receiver_id"),
-                chat_room=room,
+                group_id=group_id,
                 content=msg_data.get("content"),
                 message_type=msg_data.get("type", "text")
             )
@@ -68,12 +65,12 @@ async def websocket_endpoint(websocket: WebSocket, room: str, user_id: int):
                 "id": new_msg.id,
                 "sender_id": user_id,
                 "sender_name": user.name if user else "Noma'lum",
-                "content": msg_data.get("content"),
+                "content": msg_data.get("content", ""),
                 "message_type": msg_data.get("type", "text"),
                 "created_at": str(new_msg.created_at)
             }, room)
     except WebSocketDisconnect:
-        manager.disconnect(websocket, room)
+        manager.disconnect(ws, room)
         if user:
             user.is_online = False
             user.last_seen = datetime.utcnow()
@@ -84,21 +81,3 @@ async def websocket_endpoint(websocket: WebSocket, room: str, user_id: int):
         }, room)
     finally:
         db.close()
-
-@router.get("/history/{room}")
-async def get_history(room: str, db: Session = Depends(get_db)):
-    messages = db.query(Message).filter(
-        Message.chat_room == room,
-        Message.is_deleted == False
-    ).order_by(Message.created_at.asc()).limit(100).all()
-    result = []
-    for m in messages:
-        result.append({
-            "id": m.id,
-            "sender_id": m.sender_id,
-            "sender_name": m.sender.name if m.sender else "Noma'lum",
-            "content": m.content,
-            "message_type": m.message_type,
-            "created_at": str(m.created_at)
-        })
-    return result
