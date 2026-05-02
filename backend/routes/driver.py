@@ -1,40 +1,60 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from pydantic import BaseModel
 from datetime import datetime
 
 from database import get_db
-from models import User, Route
+from models import User, Group, driver_groups
 from taksi_auth import get_current_user
 
 router = APIRouter(prefix="/driver", tags=["driver"])
 
-class UpdateStatusRequest(BaseModel):
+class StatusRequest(BaseModel):
     is_online: bool
 
 @router.get("/profile")
-async def get_profile(current_user: User = Depends(get_current_user)):
+async def get_profile(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     if current_user.role != "driver":
         raise HTTPException(status_code=403, detail="Faqat haydovchilar uchun")
     days_left = None
     if current_user.subscription_expires:
         delta = current_user.subscription_expires - datetime.utcnow()
         days_left = max(0, delta.days)
+    groups = []
+    for g in current_user.groups:
+        row = db.execute(
+            driver_groups.select().where(
+                and_(driver_groups.c.driver_id == current_user.id,
+                     driver_groups.c.group_id == g.id)
+            )
+        ).fetchone()
+        if row:
+            groups.append({
+                "id": g.id,
+                "name": g.name,
+                "invite_code": g.invite_code,
+                "is_approved": row.is_approved
+            })
     return {
         "id": current_user.id,
         "name": current_user.name,
         "phone": current_user.phone,
-        "car_model": current_user.car_model,
-        "car_number": current_user.car_number,
+        "car_model": current_user.car_model or "",
+        "car_number": current_user.car_number or "",
         "is_online": current_user.is_online,
         "is_approved": current_user.is_approved,
         "subscription_expires": str(current_user.subscription_expires) if current_user.subscription_expires else None,
-        "days_left": days_left
+        "days_left": days_left,
+        "groups": groups
     }
 
 @router.post("/toggle-status")
 async def toggle_status(
-    request: UpdateStatusRequest,
+    request: StatusRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -49,7 +69,25 @@ async def toggle_status(
     db.commit()
     return {"success": True, "is_online": current_user.is_online}
 
-@router.get("/routes")
-async def get_routes(db: Session = Depends(get_db)):
-    routes = db.query(Route).filter(Route.is_active == True).all()
-    return [{"id": r.id, "name": r.name, "from_city": r.from_city, "to_city": r.to_city} for r in routes]
+@router.get("/groups")
+async def get_my_groups(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.role != "driver":
+        raise HTTPException(status_code=403, detail="Faqat haydovchilar uchun")
+    result = []
+    for g in current_user.groups:
+        row = db.execute(
+            driver_groups.select().where(
+                and_(driver_groups.c.driver_id == current_user.id,
+                     driver_groups.c.group_id == g.id)
+            )
+        ).fetchone()
+        if row and row.is_approved:
+            result.append({
+                "id": g.id,
+                "name": g.name,
+                "invite_code": g.invite_code
+            })
+    return result
