@@ -44,7 +44,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from routes.auth_routes import router as auth_router
+from routes.login_routes import router as auth_router
 from routes.driver import router as driver_router
 from routes.client import router as client_router
 from routes.admin import router as admin_router
