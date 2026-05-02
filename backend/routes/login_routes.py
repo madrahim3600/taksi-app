@@ -8,7 +8,7 @@ import httpx
 
 from database import get_db
 from models import User, VerificationCode
-from auth import create_access_token, generate_code
+from taksi_auth import create_access_token, generate_code
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

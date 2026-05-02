@@ -6,7 +6,7 @@ from datetime import datetime
 
 from database import get_db, SessionLocal
 from models import Message, User
-from auth import get_current_user
+from taksi_auth import get_current_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 

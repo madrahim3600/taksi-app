@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from database import get_db
 from models import User, Route, Message
-from auth import get_admin_user
+from taksi_auth import get_admin_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 

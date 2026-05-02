@@ -4,7 +4,7 @@ from datetime import datetime
 
 from database import get_db
 from models import User, Route
-from auth import get_current_user
+from taksi_auth import get_current_user
 
 router = APIRouter(prefix="/client", tags=["client"])
 
