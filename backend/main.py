@@ -2,10 +2,14 @@ import os
 import sys
 import random
 import string
+import pathlib
 from dotenv import load_dotenv
 
-load_dotenv('/home/taksi/taksi-app/backend/.env')
-sys.path.insert(0, '/home/taksi/taksi-app/backend')
+# .env faylni avtomatik topib o'qiydi
+load_dotenv()
+
+# Backend papkasini Python path ga qo'shish
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
