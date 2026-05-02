@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - TaksiBor</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0f0c29;color:white;min-height:100vh}
+.header{background:rgba(255,255,255,0.05);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.1)}
+.header-title{font-size:20px;font-weight:700;color:#ffd200}
+.logout-btn{background:rgba(255,0,0,0.2);border:1px solid rgba(255,0,0,0.3);color:#ff6b6b;padding:8px 15px;border-radius:8px;font-size:13px;cursor:pointer}
+.tabs{display:flex;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.1);overflow-x:auto}
+.tab{padding:15px 20px;font-size:14px;cursor:pointer;white-space:nowrap;color:#aaa;border-bottom:2px solid transparent;transition:all 0.2s}
+.tab.active{color:#ffd200;border-bottom-color:#ffd200}
+.content{padding:20px;display:none}
+.content.active{display:block}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stat-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px;text-align:center}
+.stat-num{font-size:32px;font-weight:700;color:#ffd200}
+.stat-label{font-size:13px;color:#aaa;margin-top:5px}
+
+/* Cards */
+.driver-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px;margin-bottom:12px}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.card-name{font-size:16px;font-weight:600}
+.card-phone{font-size:13px;color:#aaa;margin-bottom:5px}
+.card-car{font-size:13px;color:#aaa;margin-bottom:12px}
+.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-pending{background:rgba(255,165,0,0.2);color:orange;border:1px solid orange}
+.badge-approved{background:rgba(0,255,136,0.2);color:#00ff88;border:1px solid #00ff88}
+.badge-online{background:rgba(0,255,136,0.2);color:#00ff88}
+.badge-offline{background:rgba(255,255,255,0.1);color:#aaa}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:8px 14px;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600}
+.btn-approve{background:linear-gradient(135deg,#00b09b,#96c93d);color:white}
+.btn-reject{background:rgba(255,0,0,0.2);color:#ff6b6b;border:1px solid rgba(255,0,0,0.3)}
+.btn-days{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
+.btn-delete{background:rgba(255,0,0,0.1);color:#ff6b6b;border:1px solid rgba(255,0,0,0.2)}
+.days-info{font-size:13px;color:#ffd200;margin-bottom:8px}
+
+/* Input */
+.input{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:white;padding:10px 15px;font-size:14px;outline:none;width:100%}
+.input:focus{border-color:#ffd200}
+.form-row{display:flex;gap:10px;margin-bottom:15px}
+.form-row .input{flex:1}
+.btn-primary{padding:12px 20px;background:linear-gradient(135deg,#f7971e,#ffd200);border:none;border-radius:10px;color:#333;font-size:15px;font-weight:700;cursor:pointer;width:100%}
+
+/* Messages */
+.msg-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-bottom:10px}
+.msg-sender{font-size:13px;color:#ffd200;margin-bottom:5px}
+.msg-text{font-size:15px;margin-bottom:8px}
+.msg-time{font-size:12px;color:#aaa}
+.btn-del-msg{background:rgba(255,0,0,0.1);color:#ff6b6b;border:1px solid rgba(255,0,0,0.2);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer}
+
+/* Routes */
+.route-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:12px 25px;border-radius:25px;font-size:14px;display:none;z-index:999;white-space:nowrap}
+
+/* Modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-box{background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:25px;width:90%;max-width:350px}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:20px}
+.modal-btns{display:flex;gap:10px;margin-top:15px}
+
+.empty{text-align:center;color:#aaa;padding:40px 20px;font-size:15px}
+.section-title{font-size:16px;font-weight:600;margin-bottom:15px;color:#ffd200}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">⚙️ Admin Panel</div>
+  <button class="logout-btn" onclick="logout()">Chiqish</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('stats')">📊 Statistika</div>
+  <div class="tab" onclick="switchTab('pending')">⏳ Kutmoqda</div>
+  <div class="tab" onclick="switchTab('drivers')">🚗 Haydovchilar</div>
+  <div class="tab" onclick="switchTab('messages')">💬 Xabarlar</div>
+  <div class="tab" onclick="switchTab('routes')">🛣 Yo'nalishlar</div>
+  <div class="tab" onclick="switchTab('settings')">🔐 Sozlamalar</div>
+</div>
+
+<!-- Statistika -->
+<div class="content active" id="tab-stats">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" id="s-total">0</div>
+      <div class="stat-label">Jami haydovchilar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-active">0</div>
+      <div class="stat-label">Faol obunalar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-online">0</div>
+      <div class="stat-label">Online foydalanuvchilar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-pending">0</div>
+      <div class="stat-label">Tasdiq kutmoqda</div>
+    </div>
+  </div>
+  <button class="btn-primary" onclick="loadStats()">🔄 Yangilash</button>
+</div>
+
+<!-- Kutmoqda -->
+<div class="content" id="tab-pending">
+  <div class="section-title">Tasdiq kutayotgan haydovchilar</div>
+  <div id="pending-list"></div>
+</div>
+
+<!-- Haydovchilar -->
+<div class="content" id="tab-drivers">
+  <div class="section-title">Barcha haydovchilar</div>
+  <div style="margin-bottom:15px">
+    <input type="text" class="input" placeholder="🔍 Qidirish..." oninput="filterDrivers(this.value)">
+  </div>
+  <div id="drivers-list"></div>
+</div>
+
+<!-- Xabarlar -->
+<div class="content" id="tab-messages">
+  <div class="section-title">Barcha xabarlar</div>
+  <div id="messages-list"></div>
+</div>
+
+<!-- Yo'nalishlar -->
+<div class="content" id="tab-routes">
+  <div class="section-title">Yo'nalish qo'shish</div>
+  <div class="form-row">
+    <input type="text" class="input" id="route-from" placeholder="Qayerdan">
+    <input type="text" class="input" id="route-to" placeholder="Qayerga">
+  </div>
+  <button class="btn-primary" onclick="addRoute()" style="margin-bottom:20px">➕ Qo'shish</button>
+  <div class="section-title">Mavjud yo'nalishlar</div>
+  <div id="routes-list"></div>
+</div>
+
+<!-- Sozlamalar -->
+<div class="content" id="tab-settings">
+  <div class="section-title">Admin parolini o'zgartirish</div>
+  <div style="margin-bottom:15px">
+    <input type="password" class="input" id="new-pass" placeholder="Yangi parol" style="margin-bottom:10px">
+    <input type="password" class="input" id="new-pass2" placeholder="Parolni takrorlang">
+  </div>
+  <button class="btn-primary" onclick="changePassword()">💾 Saqlash</button>
+</div>
+
+<!-- Days Modal -->
+<div class="modal" id="days-modal">
+  <div class="modal-box">
+    <div class="modal-title">📅 Kun qo'shish</div>
+    <input type="number" class="input" id="days-input" placeholder="Necha kun?" min="1" max="365">
+    <div class="modal-btns">
+      <button class="btn btn-approve" style="flex:1" onclick="confirmAddDays()">Qo'shish</button>
+      <button class="btn btn-reject" style="flex:1" onclick="closeModal()">Bekor</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://taksi-app.onrender.com';
+let token = localStorage.getItem('token');
+let allDrivers = [];
+let selectedDriverId = null;
+
+if (!token) window.location.href = 'index.html';
+
+function toast(msg, color) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = color || '#333';
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['stats','pending','drivers','messages','routes','settings'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'stats') loadStats();
+  if (name === 'pending') loadPending();
+  if (name === 'drivers') loadDrivers();
+  if (name === 'messages') loadMessages();
+  if (name === 'routes') loadRoutes();
+}
+
+async function api(path, method, body) {
+  const res = await fetch(API + path, {
+    method: method || 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (res.status === 401) { logout(); return null; }
+  return res.json();
+}
+
+async function loadStats() {
+  const data = await api('/admin/stats');
+  if (!data) return;
+  document.getElementById('s-total').textContent = data.total_drivers || 0;
+  document.getElementById('s-active').textContent = data.active_subscriptions || 0;
+  document.getElementById('s-online').textContent = data.online_users || 0;
+  document.getElementById('s-pending').textContent = data.pending_drivers || 0;
+}
+
+async function loadPending() {
+  const drivers = await api('/admin/drivers');
+  if (!drivers) return;
+  const pending = drivers.filter(d => !d.is_approved);
+  const list = document.getElementById('pending-list');
+  if (pending.length === 0) {
+    list.innerHTML = '<div class="empty">✅ Tasdiq kutayotgan haydovchi yo\'q</div>';
+    return;
+  }
+  list.innerHTML = pending.map(d => `
+    <div class="driver-card">
+      <div class="card-header">
+        <div class="card-name">👤 ${d.name}</div>
+        <span class="badge badge-pending">Kutmoqda</span>
+      </div>
+      <div class="card-phone">📞 ${d.phone}</div>
+      <div class="card-car">🚗 ${d.car_model || '-'} • ${d.car_number || '-'}</div>
+      <div class="card-actions">
+        <button class="btn btn-approve" onclick="approveDriver(${d.id}, true)">✅ Tasdiqlash</button>
+        <button class="btn btn-reject" onclick="approveDriver(${d.id}, false)">❌ Rad etish</button>
+      </div>
+    </div>`).join('');
+}
+
+async function loadDrivers() {
+  const drivers = await api('/admin/drivers');
+  if (!drivers) return;
+  allDrivers = drivers;
+  renderDrivers(drivers);
+}
+
+function renderDrivers(drivers) {
+  const list = document.getElementById('drivers-list');
+  if (drivers.length === 0) {
+    list.innerHTML = '<div class="empty">Haydovchi topilmadi</div>';
+    return;
+  }
+  list.innerHTML = drivers.map(d => `
+    <div class="driver-card">
+      <div class="card-header">
+        <div class="card-name">👤 ${d.name}</div>
+        <span class="badge ${d.is_online ? 'badge-online' : 'badge-offline'}">${d.is_online ? '● Online' : '○ Offline'}</span>
+      </div>
+      <div class="card-phone">📞 ${d.phone}</div>
+      <div class="card-car">🚗 ${d.car_model || '-'} • ${d.car_number || '-'}</div>
+      <div class="days-info">📅 Obuna: ${d.days_left !== null ? d.days_left + ' kun' : 'Berilmagan'}</div>
+      <div class="card-actions">
+        <button class="btn btn-days" onclick="openDaysModal(${d.id})">➕ Kun</button>
+        <button class="btn btn-reject" onclick="resetSub(${d.id})">⏹ Nol</button>
+        <button class="btn ${d.is_approved ? 'btn-reject' : 'btn-approve'}" onclick="approveDriver(${d.id}, ${!d.is_approved})">${d.is_approved ? '🔒 Bloklash' : '✅ Ochish'}</button>
+        <button class="btn btn-delete" onclick="deleteDriver(${d.id})">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function filterDrivers(q) {
+  const filtered = allDrivers.filter(d =>
+    d.name.toLowerCase().includes(q.toLowerCase()) ||
+    d.phone.includes(q)
+  );
+  renderDrivers(filtered);
+}
+
+async function approveDriver(id, approved) {
+  const data = await api('/admin/approve', 'POST', {user_id: id, approved});
+  if (data && data.success) {
+    toast(approved ? '✅ Tasdiqlandi!' : '❌ Blok qilindi!', approved ? '#00b09b' : '#ff6b6b');
+    loadPending();
+    loadDrivers();
+    loadStats();
+  }
+}
+
+function openDaysModal(id) {
+  selectedDriverId = id;
+  document.getElementById('days-input').value = '';
+  document.getElementById('days-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('days-modal').classList.remove('open');
+  selectedDriverId = null;
+}
+
+async function confirmAddDays() {
+  const days = parseInt(document.getElementById('days-input').value);
+  if (!days || days < 1) return toast('Kunlar sonini kiriting!');
+  const data = await api('/admin/add-days', 'POST', {user_id: selectedDriverId, days});
+  if (data && data.success) {
+    toast('✅ ' + days + ' kun qo\'shildi!', '#00b09b');
+    closeModal();
+    loadDrivers();
+    loadStats();
+  }
+}
+
+async function resetSub(id) {
+  if (!confirm('Obunani nolga tushirasizmi?')) return;
+  const data = await api('/admin/reset-sub/' + id, 'POST');
+  if (data && data.success) {
+    toast('⏹ Obuna nolga tushirildi!');
+    loadDrivers();
+  }
+}
+
+async function deleteDriver(id) {
+  if (!confirm('Haydovchini o\'chirasizmi?')) return;
+  const data = await api('/admin/driver/' + id, 'DELETE');
+  if (data && data.success) {
+    toast('🗑 O\'chirildi!', '#ff6b6b');
+    loadDrivers();
+    loadStats();
+  }
+}
+
+async function loadMessages() {
+  const msgs = await api('/admin/messages');
+  if (!msgs) return;
+  const list = document.getElementById('messages-list');
+  if (msgs.length === 0) {
+    list.innerHTML = '<div class="empty">Xabar yo\'q</div>';
+    return;
+  }
+  list.innerHTML = msgs.map(m => `
+    <div class="msg-card">
+      <div class="msg-sender">👤 ${m.sender_name} • ${m.chat_room}</div>
+      <div class="msg-text">${m.content || '📎 Media'}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="msg-time">${new Date(m.created_at).toLocaleString('uz')}</div>
+        <button class="btn-del-msg" onclick="deleteMsg(${m.id})">🗑 O'chirish</button>
+      </div>
+    </div>`).join('');
+}
+
+async function deleteMsg(id) {
+  const data = await api('/admin/message/' + id, 'DELETE');
+  if (data && data.success) {
+    toast('🗑 Xabar o\'chirildi!');
+    loadMessages();
+  }
+}
+
+async function loadRoutes() {
+  const routes = await api('/driver/routes');
+  if (!routes) return;
+  const list = document.getElementById('routes-list');
+  list.innerHTML = routes.map(r => `
+    <div class="route-card">
+      <div>🛣 ${r.name}</div>
+      <button class="btn btn-delete" onclick="deleteRoute(${r.id})">🗑</button>
+    </div>`).join('');
+}
+
+async function addRoute() {
+  const from = document.getElementById('route-from').value.trim();
+  const to = document.getElementById('route-to').value.trim();
+  if (!from || !to) return toast('Qayerdan va qayerga kiriting!');
+  const data = await api('/admin/routes', 'POST', {
+    name: from + ' - ' + to,
+    from_city: from,
+    to_city: to
+  });
+  if (data && data.success) {
+    toast('✅ Yo\'nalish qo\'shildi!', '#00b09b');
+    document.getElementById('route-from').value = '';
+    document.getElementById('route-to').value = '';
+    loadRoutes();
+  }
+}
+
+async function deleteRoute(id) {
+  if (!confirm('Yo\'nalishni o\'chirasizmi?')) return;
+  const data = await api('/admin/route/' + id, 'DELETE');
+  if (data && data.success) {
+    toast('🗑 O\'chirildi!');
+    loadRoutes();
+  }
+}
+
+function changePassword() {
+  const p1 = document.getElementById('new-pass').value;
+  const p2 = document.getElementById('new-pass2').value;
+  if (!p1) return toast('Yangi parol kiriting!');
+  if (p1 !== p2) return toast('Parollar mos kelmaydi!');
+  toast('⚠️ Bu funksiya keyingi versiyada!');
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = 'index.html';
+}
+
+loadStats();
+</script>
+</body>
+</html>
